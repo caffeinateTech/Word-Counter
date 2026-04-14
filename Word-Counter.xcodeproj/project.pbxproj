@@ -1,0 +1,598 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1B6810391A41624600E3D45F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B6810381A41624600E3D45F /* main.m */; };
+		1B68103C1A41624600E3D45F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B68103B1A41624600E3D45F /* AppDelegate.m */; };
+		1B68103E1A41624600E3D45F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B68103D1A41624600E3D45F /* Images.xcassets */; };
+		1B68104D1A41624700E3D45F /* LighterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B68104C1A41624700E3D45F /* LighterTests.m */; };
+		1BAC73BE1A6FC1710072B7E2 /* MAAttachedWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BAC73BD1A6FC1710072B7E2 /* MAAttachedWindow.m */; };
+		72471DF81ACA852200DD143D /* iconScreenLights.png in Resources */ = {isa = PBXBuildFile; fileRef = 72471DF71ACA852200DD143D /* iconScreenLights.png */; };
+		72471E071ACB02B700DD143D /* iconYoutubeMenuTab.png in Resources */ = {isa = PBXBuildFile; fileRef = 72471E031ACB02B700DD143D /* iconYoutubeMenuTab.png */; };
+		72471E081ACB02B700DD143D /* iconBreakReminder.png in Resources */ = {isa = PBXBuildFile; fileRef = 72471E041ACB02B700DD143D /* iconBreakReminder.png */; };
+		72471E091ACB02B700DD143D /* iconMyStopWatch.png in Resources */ = {isa = PBXBuildFile; fileRef = 72471E051ACB02B700DD143D /* iconMyStopWatch.png */; };
+		72471E0A1ACB02B700DD143D /* iconYMailTab.png in Resources */ = {isa = PBXBuildFile; fileRef = 72471E061ACB02B700DD143D /* iconYMailTab.png */; };
+		72568FD51A9B09FC00E64AF6 /* iconGeometry.png in Resources */ = {isa = PBXBuildFile; fileRef = 72568FD31A9B09FC00E64AF6 /* iconGeometry.png */; };
+		72568FD61A9B09FC00E64AF6 /* iconVolume.png in Resources */ = {isa = PBXBuildFile; fileRef = 72568FD41A9B09FC00E64AF6 /* iconVolume.png */; };
+		72568FD81A9B173800E64AF6 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 72568FD71A9B173800E64AF6 /* icon.png */; };
+		7265D2381ACA6E2200128556 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7265D2371ACA6E2200128556 /* ServiceManagement.framework */; };
+		729873D31B5E6BB00084FB5E /* MenuBarIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 729873D21B5E6BB00084FB5E /* MenuBarIcon.png */; };
+		72CCF77F1A976665003C3552 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72CCF77E1A976665003C3552 /* MainMenu.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1B6810471A41624700E3D45F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1B68102B1A41624600E3D45F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1B6810321A41624600E3D45F;
+			remoteInfo = Lighter;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7265D2391ACA6E7C00128556 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LoginItems;
+			dstSubfolderSpec = 1;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1B6810331A41624600E3D45F /* Word-Counter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Word-Counter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B6810371A41624600E3D45F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1B6810381A41624600E3D45F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1B68103A1A41624600E3D45F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		1B68103B1A41624600E3D45F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		1B68103D1A41624600E3D45F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		1B6810461A41624700E3D45F /* Word-CounterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Word-CounterTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B68104B1A41624700E3D45F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1B68104C1A41624700E3D45F /* LighterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LighterTests.m; sourceTree = "<group>"; };
+		1BAC73BC1A6FC1710072B7E2 /* MAAttachedWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MAAttachedWindow.h; sourceTree = "<group>"; };
+		1BAC73BD1A6FC1710072B7E2 /* MAAttachedWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MAAttachedWindow.m; sourceTree = "<group>"; };
+		72471DF71ACA852200DD143D /* iconScreenLights.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iconScreenLights.png; sourceTree = "<group>"; };
+		72471E031ACB02B700DD143D /* iconYoutubeMenuTab.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iconYoutubeMenuTab.png; sourceTree = "<group>"; };
+		72471E041ACB02B700DD143D /* iconBreakReminder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iconBreakReminder.png; sourceTree = "<group>"; };
+		72471E051ACB02B700DD143D /* iconMyStopWatch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iconMyStopWatch.png; sourceTree = "<group>"; };
+		72471E061ACB02B700DD143D /* iconYMailTab.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iconYMailTab.png; sourceTree = "<group>"; };
+		72568FD31A9B09FC00E64AF6 /* iconGeometry.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iconGeometry.png; sourceTree = "<group>"; };
+		72568FD41A9B09FC00E64AF6 /* iconVolume.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iconVolume.png; sourceTree = "<group>"; };
+		72568FD71A9B173800E64AF6 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		7265D2371ACA6E2200128556 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		729873D21B5E6BB00084FB5E /* MenuBarIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuBarIcon.png; sourceTree = "<group>"; };
+		72CCF77E1A976665003C3552 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		72E884601ACB0D8E000A8EF0 /* Word-Counter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Word-Counter.entitlements"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1B6810301A41624600E3D45F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7265D2381ACA6E2200128556 /* ServiceManagement.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1B6810431A41624700E3D45F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1B68102A1A41624600E3D45F = {
+			isa = PBXGroup;
+			children = (
+				72E884601ACB0D8E000A8EF0 /* Word-Counter.entitlements */,
+				7265D2371ACA6E2200128556 /* ServiceManagement.framework */,
+				1B6810351A41624600E3D45F /* Lighter */,
+				1B6810491A41624700E3D45F /* LighterTests */,
+				1B6810341A41624600E3D45F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1B6810341A41624600E3D45F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1B6810331A41624600E3D45F /* Word-Counter.app */,
+				1B6810461A41624700E3D45F /* Word-CounterTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1B6810351A41624600E3D45F /* Lighter */ = {
+			isa = PBXGroup;
+			children = (
+				72150CDE1A416CFE0036D91A /* Resources */,
+				1B68103A1A41624600E3D45F /* AppDelegate.h */,
+				1B68103B1A41624600E3D45F /* AppDelegate.m */,
+				72CCF77E1A976665003C3552 /* MainMenu.xib */,
+				72150CF11A41B8C40036D91A /* MenuBar */,
+				1B68103D1A41624600E3D45F /* Images.xcassets */,
+				1B6810361A41624600E3D45F /* Supporting Files */,
+			);
+			path = Lighter;
+			sourceTree = "<group>";
+		};
+		1B6810361A41624600E3D45F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				1B6810371A41624600E3D45F /* Info.plist */,
+				1B6810381A41624600E3D45F /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		1B6810491A41624700E3D45F /* LighterTests */ = {
+			isa = PBXGroup;
+			children = (
+				1B68104C1A41624700E3D45F /* LighterTests.m */,
+				1B68104A1A41624700E3D45F /* Supporting Files */,
+			);
+			path = LighterTests;
+			sourceTree = "<group>";
+		};
+		1B68104A1A41624700E3D45F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				1B68104B1A41624700E3D45F /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		72150CDE1A416CFE0036D91A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				729873D21B5E6BB00084FB5E /* MenuBarIcon.png */,
+				72471E021ACB01C400DD143D /* Icons */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		72150CF11A41B8C40036D91A /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				1BAC73BC1A6FC1710072B7E2 /* MAAttachedWindow.h */,
+				1BAC73BD1A6FC1710072B7E2 /* MAAttachedWindow.m */,
+			);
+			name = MenuBar;
+			sourceTree = "<group>";
+		};
+		72471E021ACB01C400DD143D /* Icons */ = {
+			isa = PBXGroup;
+			children = (
+				72471E031ACB02B700DD143D /* iconYoutubeMenuTab.png */,
+				72471E041ACB02B700DD143D /* iconBreakReminder.png */,
+				72471E051ACB02B700DD143D /* iconMyStopWatch.png */,
+				72471E061ACB02B700DD143D /* iconYMailTab.png */,
+				72471DF71ACA852200DD143D /* iconScreenLights.png */,
+				72568FD71A9B173800E64AF6 /* icon.png */,
+				72568FD31A9B09FC00E64AF6 /* iconGeometry.png */,
+				72568FD41A9B09FC00E64AF6 /* iconVolume.png */,
+			);
+			name = Icons;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1B6810321A41624600E3D45F /* Word-Counter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1B6810501A41624700E3D45F /* Build configuration list for PBXNativeTarget "Word-Counter" */;
+			buildPhases = (
+				1B68102F1A41624600E3D45F /* Sources */,
+				1B6810301A41624600E3D45F /* Frameworks */,
+				1B6810311A41624600E3D45F /* Resources */,
+				7265D2391ACA6E7C00128556 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Word-Counter";
+			productName = Lighter;
+			productReference = 1B6810331A41624600E3D45F /* Word-Counter.app */;
+			productType = "com.apple.product-type.application";
+		};
+		1B6810451A41624700E3D45F /* Word-CounterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1B6810531A41624700E3D45F /* Build configuration list for PBXNativeTarget "Word-CounterTests" */;
+			buildPhases = (
+				1B6810421A41624700E3D45F /* Sources */,
+				1B6810431A41624700E3D45F /* Frameworks */,
+				1B6810441A41624700E3D45F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1B6810481A41624700E3D45F /* PBXTargetDependency */,
+			);
+			name = "Word-CounterTests";
+			productName = LighterTests;
+			productReference = 1B6810461A41624700E3D45F /* Word-CounterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1B68102B1A41624600E3D45F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0600;
+				ORGANIZATIONNAME = "Carmen Simoc";
+				TargetAttributes = {
+					1B6810321A41624600E3D45F = {
+						CreatedOnToolsVersion = 6.0.1;
+						DevelopmentTeam = SXFJ5K42NW;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+						};
+					};
+					1B6810451A41624700E3D45F = {
+						CreatedOnToolsVersion = 6.0.1;
+						TestTargetID = 1B6810321A41624600E3D45F;
+					};
+				};
+			};
+			buildConfigurationList = 1B68102E1A41624600E3D45F /* Build configuration list for PBXProject "Word-Counter" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				en,
+				Base,
+			);
+			mainGroup = 1B68102A1A41624600E3D45F;
+			productRefGroup = 1B6810341A41624600E3D45F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1B6810321A41624600E3D45F /* Word-Counter */,
+				1B6810451A41624700E3D45F /* Word-CounterTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1B6810311A41624600E3D45F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				72471E071ACB02B700DD143D /* iconYoutubeMenuTab.png in Resources */,
+				72568FD51A9B09FC00E64AF6 /* iconGeometry.png in Resources */,
+				72471DF81ACA852200DD143D /* iconScreenLights.png in Resources */,
+				72471E091ACB02B700DD143D /* iconMyStopWatch.png in Resources */,
+				72568FD81A9B173800E64AF6 /* icon.png in Resources */,
+				729873D31B5E6BB00084FB5E /* MenuBarIcon.png in Resources */,
+				72471E0A1ACB02B700DD143D /* iconYMailTab.png in Resources */,
+				72471E081ACB02B700DD143D /* iconBreakReminder.png in Resources */,
+				72568FD61A9B09FC00E64AF6 /* iconVolume.png in Resources */,
+				1B68103E1A41624600E3D45F /* Images.xcassets in Resources */,
+				72CCF77F1A976665003C3552 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1B6810441A41624700E3D45F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1B68102F1A41624600E3D45F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1BAC73BE1A6FC1710072B7E2 /* MAAttachedWindow.m in Sources */,
+				1B68103C1A41624600E3D45F /* AppDelegate.m in Sources */,
+				1B6810391A41624600E3D45F /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1B6810421A41624700E3D45F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1B68104D1A41624700E3D45F /* LighterTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1B6810481A41624700E3D45F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1B6810321A41624600E3D45F /* Word-Counter */;
+			targetProxy = 1B6810471A41624700E3D45F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1B68104E1A41624700E3D45F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Installer Distribution: Tamas Iuliu (SXFJ5K42NW)";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "ae49b583-ca21-4141-a72b-1f46bd9c7836";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		1B68104F1A41624700E3D45F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Installer Distribution: Tamas Iuliu (SXFJ5K42NW)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PROVISIONING_PROFILE = "ae49b583-ca21-4141-a72b-1f46bd9c7836";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		1B6810511A41624700E3D45F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Word-Counter.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = SXFJ5K42NW;
+				INFOPLIST_FILE = Lighter/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				PRODUCT_NAME = "Word-Counter";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx15.2;
+			};
+			name = Debug;
+		};
+		1B6810521A41624700E3D45F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Word-Counter.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = SXFJ5K42NW;
+				INFOPLIST_FILE = Lighter/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				PRODUCT_NAME = "Word-Counter";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx15.2;
+			};
+			name = Release;
+		};
+		1B6810541A41624700E3D45F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = LighterTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "Word-CounterTests";
+				PROVISIONING_PROFILE = "";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Lighter.app/Contents/MacOS/Lighter";
+			};
+			name = Debug;
+		};
+		1B6810551A41624700E3D45F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = LighterTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "Word-CounterTests";
+				PROVISIONING_PROFILE = "";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Lighter.app/Contents/MacOS/Lighter";
+			};
+			name = Release;
+		};
+		72568D181A51D1D60069C43D /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Installer Distribution: Tamas Iuliu (SXFJ5K42NW)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PROVISIONING_PROFILE = "ae49b583-ca21-4141-a72b-1f46bd9c7836";
+				SDKROOT = macosx;
+			};
+			name = Distribution;
+		};
+		72568D191A51D1D60069C43D /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Word-Counter.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = SXFJ5K42NW;
+				INFOPLIST_FILE = Lighter/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				PRODUCT_NAME = "Word-Counter";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx15.2;
+			};
+			name = Distribution;
+		};
+		72568D1A1A51D1D60069C43D /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = LighterTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "Word-CounterTests";
+				PROVISIONING_PROFILE = "";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Lighter.app/Contents/MacOS/Lighter";
+			};
+			name = Distribution;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1B68102E1A41624600E3D45F /* Build configuration list for PBXProject "Word-Counter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B68104E1A41624700E3D45F /* Debug */,
+				1B68104F1A41624700E3D45F /* Release */,
+				72568D181A51D1D60069C43D /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1B6810501A41624700E3D45F /* Build configuration list for PBXNativeTarget "Word-Counter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B6810511A41624700E3D45F /* Debug */,
+				1B6810521A41624700E3D45F /* Release */,
+				72568D191A51D1D60069C43D /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1B6810531A41624700E3D45F /* Build configuration list for PBXNativeTarget "Word-CounterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B6810541A41624700E3D45F /* Debug */,
+				1B6810551A41624700E3D45F /* Release */,
+				72568D1A1A51D1D60069C43D /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1B68102B1A41624600E3D45F /* Project object */;
+}
