@@ -19,11 +19,17 @@
                 <outlet property="characterLabel" destination="m7g-tQ-2pS" id="fpS-84-7g9"/>
                 <outlet property="charactersWithoutSpacesLabel" destination="E14-yn-GGH" id="JDA-i7-WGZ"/>
                 <outlet property="counterWindow" destination="mmM-gB-3H2" id="wnC-xF-UVh"/>
+                <outlet property="fleshEaseLabel" destination="WZC-aV-cjm" id="102-Ya-etc"/>
+                <outlet property="gradeLabel" destination="L55-KM-YIH" id="KCM-FS-w9n"/>
+                <outlet property="lettersLabel" destination="yzY-fU-SdH" id="TNS-aU-X66"/>
                 <outlet property="linesLabel" destination="FdB-40-dXi" id="fJQ-s6-4an"/>
                 <outlet property="popUpView" destination="Fwr-gF-Gbw" id="Rul-cA-skA"/>
                 <outlet property="raresBtn" destination="Fxr-XF-A2J" id="MBn-7a-6bV"/>
+                <outlet property="readingTimeLabel" destination="tyD-FX-va8" id="lKd-SO-OFb"/>
                 <outlet property="sentencesLabel" destination="iv4-L3-HZY" id="jIV-lQ-3H7"/>
+                <outlet property="sentimentLabel" destination="ll1-tx-ZAm" id="EfM-bO-bHP"/>
                 <outlet property="spacesLabel" destination="oSz-bA-76X" id="p14-Gk-5aX"/>
+                <outlet property="syllableCountLabel" destination="PQX-RF-o3V" id="bvN-p9-XHH"/>
                 <outlet property="turnOnBtn" destination="L5L-fh-oKZ" id="YaX-U6-CXN"/>
                 <outlet property="uniqueWordsLabel" destination="CI1-yH-Wpf" id="36f-Mo-P4k"/>
                 <outlet property="websiteBtn" destination="kej-XQ-EH7" id="4ga-ee-BeR"/>
@@ -161,14 +167,14 @@
         <window title="Word-Counter" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" hasShadow="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="mmM-gB-3H2" userLabel="Counter Window" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES" HUD="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="75" y="109" width="250" height="215"/>
+            <rect key="contentRect" x="75" y="109" width="250" height="448"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1025"/>
             <view key="contentView" id="2au-ax-qxD">
-                <rect key="frame" x="0.0" y="0.0" width="250" height="215"/>
+                <rect key="frame" x="0.0" y="0.0" width="250" height="448"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="E14-yn-GGH">
-                        <rect key="frame" x="3" y="35" width="244" height="25"/>
+                        <rect key="frame" x="3" y="268" width="244" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Characters without spaces:" id="2Lz-dt-Rz3">
                             <font key="font" size="14" name="LucidaGrande"/>
@@ -177,7 +183,7 @@
                         </textFieldCell>
                     </textField>
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FdB-40-dXi">
-                        <rect key="frame" x="3" y="155" width="244" height="25"/>
+                        <rect key="frame" x="3" y="388" width="244" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Lines:" id="WrS-BC-F1x">
                             <font key="font" size="14" name="LucidaGrande"/>
@@ -186,7 +192,7 @@
                         </textFieldCell>
                     </textField>
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a3E-G9-wmG">
-                        <rect key="frame" x="3" y="125" width="244" height="25"/>
+                        <rect key="frame" x="3" y="358" width="244" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Words:" id="W7V-ce-u2f">
                             <font key="font" size="14" name="LucidaGrande"/>
@@ -195,7 +201,7 @@
                         </textFieldCell>
                     </textField>
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CI1-yH-Wpf">
-                        <rect key="frame" x="3" y="95" width="244" height="25"/>
+                        <rect key="frame" x="3" y="328" width="244" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Unique words:" id="cx2-G8-yv5">
                             <font key="font" size="14" name="LucidaGrande"/>
@@ -204,7 +210,7 @@
                         </textFieldCell>
                     </textField>
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iv4-L3-HZY">
-                        <rect key="frame" x="3" y="185" width="244" height="25"/>
+                        <rect key="frame" x="3" y="418" width="244" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Sentences:" id="Y6Y-Pf-AK7">
                             <font key="font" size="14" name="LucidaGrande"/>
@@ -213,7 +219,7 @@
                         </textFieldCell>
                     </textField>
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m7g-tQ-2pS">
-                        <rect key="frame" x="3" y="65" width="244" height="25"/>
+                        <rect key="frame" x="3" y="298" width="244" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Characters:" id="P1D-1J-TY2">
                             <font key="font" size="14" name="LucidaGrande"/>
@@ -222,7 +228,7 @@
                         </textFieldCell>
                     </textField>
                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oSz-bA-76X">
-                        <rect key="frame" x="3" y="5" width="244" height="25"/>
+                        <rect key="frame" x="3" y="238" width="244" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Spaces:" id="8Ie-kd-e3g">
                             <font key="font" size="14" name="LucidaGrande"/>
@@ -230,9 +236,63 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tyD-FX-va8">
+                        <rect key="frame" x="-2" y="196" width="244" height="25"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Reading:" id="Y39-en-Fh3">
+                            <font key="font" metaFont="system" size="14"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="L55-KM-YIH">
+                        <rect key="frame" x="-2" y="163" width="244" height="25"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Grade:" id="KaW-t7-JGp">
+                            <font key="font" metaFont="system" size="14"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WZC-aV-cjm">
+                        <rect key="frame" x="-2" y="124" width="244" height="25"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Flesh:" id="iTw-hG-blF">
+                            <font key="font" metaFont="system" size="14"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ll1-tx-ZAm">
+                        <rect key="frame" x="-2" y="91" width="244" height="25"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Sentiment:" id="0X0-RN-zed">
+                            <font key="font" metaFont="system" size="14"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PQX-RF-o3V">
+                        <rect key="frame" x="-2" y="49" width="244" height="25"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Syllable:" id="EdX-Sv-XhH">
+                            <font key="font" metaFont="system" size="14"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yzY-fU-SdH">
+                        <rect key="frame" x="-2" y="16" width="244" height="25"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Letters:" id="duN-nA-DyY">
+                            <font key="font" metaFont="system" size="14"/>
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="-897" y="575"/>
+            <point key="canvasLocation" x="-897" y="691"/>
         </window>
         <window title="About" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="Ar8-nX-dHa" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES" HUD="YES"/>

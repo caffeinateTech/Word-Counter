@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import <ServiceManagement/ServiceManagement.h>
+#import "TextAnalytics.h"
+#import "SentimentAnalyzer.h"
 
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <ApplicationServices/ApplicationServices.h>
@@ -20,7 +22,7 @@
 
 @synthesize aboutWindow, raresBtn, popUpView, attachedWindow, popupShowed, websiteBtn;
 
-@synthesize counterWindow, wordsLabel, linesLabel, uniqueWordsLabel, characterLabel, sentencesLabel, charactersWithoutSpacesLabel, spacesLabel, turnOnBtn;
+@synthesize counterWindow, wordsLabel, linesLabel, uniqueWordsLabel, characterLabel, sentencesLabel, charactersWithoutSpacesLabel, spacesLabel, turnOnBtn, readingTimeLabel, gradeLabel, fleshEaseLabel, sentimentLabel, syllableCountLabel;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     
@@ -34,6 +36,7 @@
     
     popupShowed = NO;
     isOn = NO;
+    lastPasteboardChangeCount = 0;
     
     [aboutWindow orderOut:self];
     
@@ -70,6 +73,9 @@
 
     [self coloredTitleButton:raresBtn andColor:[NSColor blueColor]];
     [self coloredTitleButton:websiteBtn andColor:[NSColor blueColor]];
+    
+    // Setup accessibility labels
+    [self setupAccessibilityLabels];
 }
 
 
@@ -79,9 +85,16 @@
 // ========================================
 - (NSString *)stringForType {
     
-    NSPasteboard *myPasteboard  = [NSPasteboard generalPasteboard];
+    NSPasteboard *myPasteboard = [NSPasteboard generalPasteboard];
     
-    selectedText = [myPasteboard  stringForType:NSPasteboardTypeString];
+    NSString *text = [myPasteboard stringForType:NSPasteboardTypeString];
+    
+    // Handle nil or empty pasteboard
+    if (text == nil) {
+        selectedText = @"";
+    } else {
+        selectedText = text;
+    }
     
     return selectedText;
 }
@@ -141,6 +154,18 @@
 }
 
 
+// ================================
+// update stats from pasteboard
+// ================================
+- (void)updateFromPasteboard {
+    
+    [self stringForType];
+    [self showNumbers];
+    
+    debounceTimer = nil;
+}
+
+
 
 // ===================
 // get number of lines
@@ -148,6 +173,12 @@
 - (NSUInteger)numberOfLines {
     
     NSString *string = selectedText;
+    
+    // Handle nil or empty string
+    if (string == nil || [string length] == 0) {
+        return 0;
+    }
+    
     NSUInteger numberOfLines = 0;
     NSRange searchRange = NSMakeRange(0, 0);
     
@@ -168,6 +199,11 @@
 - (NSUInteger)numberOfWords {
     
     NSString *string = selectedText;
+    
+    if (string == nil || [string length] == 0) {
+        return 0;
+    }
+    
     __block NSUInteger numberOfWords = 0;
     
     [string enumerateSubstringsInRange:NSMakeRange(0, [string length])
@@ -185,14 +221,20 @@
 // ==========================
 - (NSUInteger)numberOfUniqueWords {
     
-    NSString *string = [selectedText lowercaseString];
+    NSString *string = selectedText;
+    
+    if (string == nil || [string length] == 0) {
+        return 0;
+    }
+    
+    NSString *lowerString = [string lowercaseString];
     NSMutableSet *uniqueWords = [NSMutableSet set];
     
-    [string enumerateSubstringsInRange:NSMakeRange(0, [string length])
-                               options:NSStringEnumerationByWords
-                            usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-                                [uniqueWords addObject:substring];
-                            }];
+    [lowerString enumerateSubstringsInRange:NSMakeRange(0, [lowerString length])
+                                   options:NSStringEnumerationByWords
+                                usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+                                    [uniqueWords addObject:substring];
+                                }];
     
     return [uniqueWords count];
 }
@@ -205,6 +247,11 @@
 - (NSUInteger)numberOfSentences {
     
     NSString *string = selectedText;
+    
+    if (string == nil || [string length] == 0) {
+        return 0;
+    }
+    
     __block NSUInteger numberOfSentences = 0;
     
     [string enumerateSubstringsInRange:NSMakeRange(0, [string length])
@@ -225,6 +272,10 @@
     
     NSString *string = selectedText;
     
+    if (string == nil) {
+        return 0;
+    }
+    
     return [string length];
 }
 
@@ -237,7 +288,11 @@
     
     NSString *string = selectedText;
     
-    int times = (int)[[string componentsSeparatedByString:@" "] count] -1;
+    if (string == nil || [string length] == 0) {
+        return 0;
+    }
+    
+    int times = (int)[[string componentsSeparatedByString:@" "] count] - 1;
     
     int number = (int)[string length] - times;
     
@@ -253,9 +308,37 @@
     
     NSString *string = selectedText;
     
-    int times = (int)[[string componentsSeparatedByString:@" "] count] -1;
+    if (string == nil || [string length] == 0) {
+        return 0;
+    }
+    
+    int times = (int)[[string componentsSeparatedByString:@" "] count] - 1;
     
     return times;
+}
+
+
+
+// ====================
+// get number of letters
+// ====================
+- (NSUInteger)numberOfLetters {
+    
+    NSString *string = selectedText;
+    
+    if (string == nil || [string length] == 0) {
+        return 0;
+    }
+    
+    NSUInteger count = 0;
+    for (NSUInteger i = 0; i < [string length]; i++) {
+        unichar c = [string characterAtIndex:i];
+        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+            count++;
+        }
+    }
+    
+    return count;
 }
 
 
@@ -265,13 +348,101 @@
 // ======================
 - (void)showNumbers {
     
-    [sentencesLabel setStringValue:[NSString stringWithFormat:@"Sentences: %lu", (unsigned long)[self numberOfSentences]]];
-    [linesLabel setStringValue:[NSString stringWithFormat:@"Lines: %lu",(unsigned long)[self numberOfLines]]];
-    [wordsLabel setStringValue:[NSString stringWithFormat:@"Words: %lu", (unsigned long)[self numberOfWords]]];
-    [uniqueWordsLabel setStringValue:[NSString stringWithFormat:@"Unique words: %lu", (unsigned long)[self numberOfUniqueWords]]];
-    [characterLabel setStringValue:[NSString stringWithFormat:@"Characters: %lu", (unsigned long)[self numberOfCharacters]]];
-    [charactersWithoutSpacesLabel setStringValue:[NSString stringWithFormat:@"Characters without spaces: %lu", (unsigned long)[self numberOfCharactersWithoutSpaces]]];
-    [spacesLabel setStringValue:[NSString stringWithFormat:@"Spaces: %lu", (unsigned long)[self numberOfSpaces]]];
+    // Get metrics
+    NSUInteger words = [self numberOfWords];
+    NSUInteger sentences = [self numberOfSentences];
+    NSUInteger lines = [self numberOfLines];
+    NSUInteger uniqueWords = [self numberOfUniqueWords];
+    NSUInteger characters = [self numberOfCharacters];
+    NSUInteger charactersWithoutSpaces = [self numberOfCharactersWithoutSpaces];
+    NSUInteger spaces = [self numberOfSpaces];
+    
+    // Update core metrics
+    [sentencesLabel setStringValue:[NSString stringWithFormat:@"Sentences: %lu", (unsigned long)sentences]];
+    [linesLabel setStringValue:[NSString stringWithFormat:@"Lines: %lu", (unsigned long)lines]];
+    [wordsLabel setStringValue:[NSString stringWithFormat:@"Words: %lu", (unsigned long)words]];
+    [uniqueWordsLabel setStringValue:[NSString stringWithFormat:@"Unique words: %lu", (unsigned long)uniqueWords]];
+    [characterLabel setStringValue:[NSString stringWithFormat:@"Characters: %lu", (unsigned long)characters]];
+    [charactersWithoutSpacesLabel setStringValue:[NSString stringWithFormat:@"Characters without spaces: %lu", (unsigned long)charactersWithoutSpaces]];
+    [spacesLabel setStringValue:[NSString stringWithFormat:@"Spaces: %lu", (unsigned long)spaces]];
+    
+    // Letter count (alphabetic characters only)
+    NSUInteger letters = [self numberOfLetters];
+    if (lettersLabel != nil) {
+        [lettersLabel setStringValue:[NSString stringWithFormat:@"Letters: %lu", (unsigned long)letters]];
+    }
+    
+    // Calculate and display readability metrics (if outlets exist)
+    if (words > 0 && sentences > 0) {
+        
+        // Reading time
+        NSUInteger readingSeconds = [TextAnalytics readingTimeInSecondsForWordCount:words wordsPerMinute:200];
+        if (readingTimeLabel != nil) {
+            if (readingSeconds < 60) {
+                [readingTimeLabel setStringValue:[NSString stringWithFormat:@"Reading Time: %lus", (unsigned long)readingSeconds]];
+            } else {
+                NSUInteger minutes = readingSeconds / 60;
+                NSUInteger secs = readingSeconds % 60;
+                [readingTimeLabel setStringValue:[NSString stringWithFormat:@"Reading Time: %lum %lus", (unsigned long)minutes, (unsigned long)secs]];
+            }
+        }
+        
+        // Syllable count
+        NSUInteger syllables = [TextAnalytics syllableCountForText:selectedText];
+        if (syllableCountLabel != nil) {
+            [syllableCountLabel setStringValue:[NSString stringWithFormat:@"Syllables: %lu", (unsigned long)syllables]];
+        }
+        
+        // Grade level & difficulty
+        double gradeLevel = [TextAnalytics fleschKincaidGradeLevelForText:selectedText words:words sentences:sentences];
+        ReadabilityDifficulty difficulty = [TextAnalytics difficultyLevelForGradeLevel:gradeLevel];
+        NSString *emoji = [TextAnalytics difficultyEmojiForLevel:difficulty];
+        
+        if (gradeLabel != nil) {
+            [gradeLabel setStringValue:[NSString stringWithFormat:@"Grade Level: %@ %.1f", emoji, gradeLevel]];
+        }
+        
+        // Flesch Reading Ease
+        double readingEase = [TextAnalytics fleschReadingEaseForText:selectedText words:words sentences:sentences];
+        if (fleshEaseLabel != nil) {
+            NSString *easeDescription;
+            if (readingEase >= 90) {
+                easeDescription = @"Very Easy";
+            } else if (readingEase >= 80) {
+                easeDescription = @"Easy";
+            } else if (readingEase >= 70) {
+                easeDescription = @"Standard";
+            } else if (readingEase >= 60) {
+                easeDescription = @"Somewhat Difficult";
+            } else {
+                easeDescription = @"Very Difficult";
+            }
+            [fleshEaseLabel setStringValue:[NSString stringWithFormat:@"Flesch Ease: %.1f (%@)", readingEase, easeDescription]];
+        }
+    } else {
+        // Clear readability metrics if not enough text
+        if (readingTimeLabel != nil) {
+            [readingTimeLabel setStringValue:@"Reading Time: —"];
+        }
+        if (syllableCountLabel != nil) {
+            [syllableCountLabel setStringValue:@"Syllables: —"];
+        }
+        if (gradeLabel != nil) {
+            [gradeLabel setStringValue:@"Grade Level: —"];
+        }
+        if (fleshEaseLabel != nil) {
+            [fleshEaseLabel setStringValue:@"Flesch Ease: —"];
+        }
+    }
+    
+    // Sentiment analysis (if outlet exists and text is valid)
+    if (sentimentLabel != nil && words >= 5) {
+        SentimentResult *sentiment = [SentimentAnalyzer analyzeSentimentForText:selectedText];
+        NSString *sentimentDisplay = [SentimentAnalyzer sentimentSummaryFromResult:sentiment];
+        [sentimentLabel setStringValue:sentimentDisplay];
+    } else if (sentimentLabel != nil) {
+        [sentimentLabel setStringValue:@"Sentiment: —"];
+    }
 }
 
 
@@ -320,6 +491,41 @@
 }
 
 
+// =======================
+// setup accessibility labels
+// =======================
+- (void)setupAccessibilityLabels {
+    
+    // Core metrics
+    [wordsLabel setAccessibilityLabel:@"Word count"];
+    [sentencesLabel setAccessibilityLabel:@"Sentence count"];
+    [linesLabel setAccessibilityLabel:@"Line count"];
+    [characterLabel setAccessibilityLabel:@"Character count"];
+    [charactersWithoutSpacesLabel setAccessibilityLabel:@"Characters without spaces"];
+    [spacesLabel setAccessibilityLabel:@"Space count"];
+    [uniqueWordsLabel setAccessibilityLabel:@"Unique word count"];
+    
+    // Readability metrics
+    if (readingTimeLabel != nil) {
+        [readingTimeLabel setAccessibilityLabel:@"Estimated reading time"];
+    }
+    if (gradeLabel != nil) {
+        [gradeLabel setAccessibilityLabel:@"Grade level"];
+    }
+    if (fleshEaseLabel != nil) {
+        [fleshEaseLabel setAccessibilityLabel:@"Flesch reading ease score"];
+    }
+    
+    // Sentiment
+    if (sentimentLabel != nil) {
+        [sentimentLabel setAccessibilityLabel:@"Text sentiment analysis"];
+    }
+    
+    // Buttons
+    [turnOnBtn setAccessibilityLabel:@"Toggle text counter"];
+}
+
+
 // =================
 // show about window
 // =================
@@ -358,6 +564,27 @@
 - (IBAction)clickedWebsite:(id)sender {
     
     [[NSWorkspace sharedWorkspace] openURL: [NSURL URLWithString:@"https://www.caffeinatetech.com"]];
+}
+
+
+// =======================
+// cleanup on app shutdown
+// =======================
+- (void)dealloc {
+    
+    // Remove pasteboard notification observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    // Invalidate any outstanding timers
+    if (myTimer != nil) {
+        [myTimer invalidate];
+        myTimer = nil;
+    }
+    
+    if (debounceTimer != nil) {
+        [debounceTimer invalidate];
+        debounceTimer = nil;
+    }
 }
 
 

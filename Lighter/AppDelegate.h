@@ -27,6 +27,10 @@
     NSString *selectedText;
     
     NSTimer *myTimer;
+    
+    NSTimer *debounceTimer;
+    
+    NSInteger lastPasteboardChangeCount;
 }
 
 
@@ -62,6 +66,18 @@
 @property (weak) IBOutlet NSTextField *charactersWithoutSpacesLabel;
 
 @property (weak) IBOutlet NSTextField *spacesLabel;
+
+@property (weak) IBOutlet NSTextField *readingTimeLabel;
+
+@property (weak) IBOutlet NSTextField *gradeLabel;
+
+@property (weak) IBOutlet NSTextField *fleshEaseLabel;
+
+@property (weak) IBOutlet NSTextField *sentimentLabel;
+
+@property (weak) IBOutlet NSTextField *syllableCountLabel;
+
+@property (weak) IBOutlet NSTextField *lettersLabel;
 
 
 // about view

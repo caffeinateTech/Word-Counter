@@ -22,6 +22,9 @@
 		72568FD81A9B173800E64AF6 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 72568FD71A9B173800E64AF6 /* icon.png */; };
 		7265D2381ACA6E2200128556 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7265D2371ACA6E2200128556 /* ServiceManagement.framework */; };
 		729873D31B5E6BB00084FB5E /* MenuBarIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 729873D21B5E6BB00084FB5E /* MenuBarIcon.png */; };
+		72B9BF722F8F74A700809A91 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 72B9BF6F2F8F74A700809A91 /* SettingsManager.m */; };
+		72B9BF732F8F74A700809A91 /* SentimentAnalyzer.m in Sources */ = {isa = PBXBuildFile; fileRef = 72B9BF6D2F8F74A700809A91 /* SentimentAnalyzer.m */; };
+		72B9BF742F8F74A700809A91 /* TextAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = 72B9BF712F8F74A700809A91 /* TextAnalytics.m */; };
 		72CCF77F1A976665003C3552 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72CCF77E1A976665003C3552 /* MainMenu.xib */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +72,12 @@
 		72568FD71A9B173800E64AF6 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		7265D2371ACA6E2200128556 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		729873D21B5E6BB00084FB5E /* MenuBarIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuBarIcon.png; sourceTree = "<group>"; };
+		72B9BF6C2F8F74A700809A91 /* SentimentAnalyzer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SentimentAnalyzer.h; sourceTree = "<group>"; };
+		72B9BF6D2F8F74A700809A91 /* SentimentAnalyzer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SentimentAnalyzer.m; sourceTree = "<group>"; };
+		72B9BF6E2F8F74A700809A91 /* SettingsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsManager.h; sourceTree = "<group>"; };
+		72B9BF6F2F8F74A700809A91 /* SettingsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsManager.m; sourceTree = "<group>"; };
+		72B9BF702F8F74A700809A91 /* TextAnalytics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextAnalytics.h; sourceTree = "<group>"; };
+		72B9BF712F8F74A700809A91 /* TextAnalytics.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TextAnalytics.m; sourceTree = "<group>"; };
 		72CCF77E1A976665003C3552 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		72E884601ACB0D8E000A8EF0 /* Word-Counter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Word-Counter.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -119,6 +128,12 @@
 				1B68103A1A41624600E3D45F /* AppDelegate.h */,
 				1B68103B1A41624600E3D45F /* AppDelegate.m */,
 				72CCF77E1A976665003C3552 /* MainMenu.xib */,
+				72B9BF6C2F8F74A700809A91 /* SentimentAnalyzer.h */,
+				72B9BF6D2F8F74A700809A91 /* SentimentAnalyzer.m */,
+				72B9BF6E2F8F74A700809A91 /* SettingsManager.h */,
+				72B9BF6F2F8F74A700809A91 /* SettingsManager.m */,
+				72B9BF702F8F74A700809A91 /* TextAnalytics.h */,
+				72B9BF712F8F74A700809A91 /* TextAnalytics.m */,
 				72150CF11A41B8C40036D91A /* MenuBar */,
 				1B68103D1A41624600E3D45F /* Images.xcassets */,
 				1B6810361A41624600E3D45F /* Supporting Files */,
@@ -304,6 +319,9 @@
 			files = (
 				1BAC73BE1A6FC1710072B7E2 /* MAAttachedWindow.m in Sources */,
 				1B68103C1A41624600E3D45F /* AppDelegate.m in Sources */,
+				72B9BF722F8F74A700809A91 /* SettingsManager.m in Sources */,
+				72B9BF732F8F74A700809A91 /* SentimentAnalyzer.m in Sources */,
+				72B9BF742F8F74A700809A91 /* TextAnalytics.m in Sources */,
 				1B6810391A41624600E3D45F /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -361,7 +379,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+			MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "ae49b583-ca21-4141-a72b-1f46bd9c7836";
@@ -398,7 +416,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+			MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "ae49b583-ca21-4141-a72b-1f46bd9c7836";
 				SDKROOT = macosx;
@@ -417,7 +435,7 @@
 				DEVELOPMENT_TEAM = SXFJ5K42NW;
 				INFOPLIST_FILE = Lighter/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = "Word-Counter";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -437,7 +455,7 @@
 				DEVELOPMENT_TEAM = SXFJ5K42NW;
 				INFOPLIST_FILE = Lighter/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = "Word-Counter";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -514,7 +532,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+			MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "ae49b583-ca21-4141-a72b-1f46bd9c7836";
 				SDKROOT = macosx;
@@ -533,7 +551,7 @@
 				DEVELOPMENT_TEAM = SXFJ5K42NW;
 				INFOPLIST_FILE = Lighter/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = "Word-Counter";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
