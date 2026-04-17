@@ -24,6 +24,8 @@
     
     BOOL isOn;
     
+    BOOL isWindowExpanded;
+    
     NSString *selectedText;
     
     NSTimer *myTimer;
@@ -49,6 +51,11 @@
 
 @property (weak) IBOutlet NSButton *turnOnBtn;
 
+@property (weak) IBOutlet NSButton *onShowAdvancedButton;
+
+@property (weak) IBOutlet NSButton *cutResultsButton;
+
+@property (weak) IBOutlet NSButton *themeButton;
 
 // count window
 @property (weak) IBOutlet NSPanel *counterWindow;
@@ -88,6 +95,12 @@
 - (IBAction)clickedWebsite:(id)sender;
 
 - (IBAction)clickedTurnOn:(id)sender;
+
+- (IBAction)onShowAdvancedButtonClick:(id)sender;
+
+- (IBAction)onCopyButtonClicked:(id)sender;
+
+- (IBAction)onThemeButtonClicked:(id)sender;
 
 @end
 

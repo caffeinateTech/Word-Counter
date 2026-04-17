@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import <ServiceManagement/ServiceManagement.h>
+#import <QuartzCore/QuartzCore.h>
 #import "TextAnalytics.h"
 #import "SentimentAnalyzer.h"
 
@@ -22,7 +23,7 @@
 
 @synthesize aboutWindow, raresBtn, popUpView, attachedWindow, popupShowed, websiteBtn;
 
-@synthesize counterWindow, wordsLabel, linesLabel, uniqueWordsLabel, characterLabel, sentencesLabel, charactersWithoutSpacesLabel, spacesLabel, turnOnBtn, readingTimeLabel, gradeLabel, fleshEaseLabel, sentimentLabel, syllableCountLabel;
+@synthesize counterWindow, wordsLabel, linesLabel, uniqueWordsLabel, characterLabel, sentencesLabel, charactersWithoutSpacesLabel, spacesLabel, turnOnBtn, readingTimeLabel, gradeLabel, fleshEaseLabel, sentimentLabel, syllableCountLabel, lettersLabel, onShowAdvancedButton, cutResultsButton, themeButton;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     
@@ -36,6 +37,7 @@
     
     popupShowed = NO;
     isOn = NO;
+    isWindowExpanded = NO;
     lastPasteboardChangeCount = 0;
     
     [aboutWindow orderOut:self];
@@ -100,27 +102,136 @@
 }
 
 
+- (IBAction)onThemeButtonClicked:(id)sender {
+}
 
-// =============================================
-// turn on or of the app (show the counter view)
-// =============================================
+- (IBAction)onCopyButtonClicked:(id)sender {
+    
+    NSMutableString *resultsToCopy = [NSMutableString string];
+    
+    // Copy in specific order: characters, characters without spaces, letters, words, unique words, sentences, lines, spaces, reading time, grade level, flesch ease, sentiment, syllables
+    if (characterLabel) [resultsToCopy appendFormat:@"%@\n", characterLabel.stringValue];
+    if (charactersWithoutSpacesLabel) [resultsToCopy appendFormat:@"%@\n", charactersWithoutSpacesLabel.stringValue];
+    if (lettersLabel) [resultsToCopy appendFormat:@"%@\n", lettersLabel.stringValue];
+    if (wordsLabel) [resultsToCopy appendFormat:@"%@\n", wordsLabel.stringValue];
+    if (uniqueWordsLabel) [resultsToCopy appendFormat:@"%@\n", uniqueWordsLabel.stringValue];
+    if (sentencesLabel) [resultsToCopy appendFormat:@"%@\n", sentencesLabel.stringValue];
+    if (linesLabel) [resultsToCopy appendFormat:@"%@\n", linesLabel.stringValue];
+    if (spacesLabel && !spacesLabel.hidden) [resultsToCopy appendFormat:@"%@\n", spacesLabel.stringValue];
+    if (readingTimeLabel && !readingTimeLabel.hidden) [resultsToCopy appendFormat:@"%@\n", readingTimeLabel.stringValue];
+    if (gradeLabel && !gradeLabel.hidden) [resultsToCopy appendFormat:@"%@\n", gradeLabel.stringValue];
+    if (fleshEaseLabel && !fleshEaseLabel.hidden) [resultsToCopy appendFormat:@"%@\n", fleshEaseLabel.stringValue];
+    if (sentimentLabel && !sentimentLabel.hidden) [resultsToCopy appendFormat:@"%@\n", sentimentLabel.stringValue];
+    if (syllableCountLabel && !syllableCountLabel.hidden) [resultsToCopy appendFormat:@"%@\n", syllableCountLabel.stringValue];
+    
+    // Copy to pasteboard
+    NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+    [pasteboard clearContents];
+    [pasteboard setString:resultsToCopy forType:NSPasteboardTypeString];
+}
+
+- (IBAction)onShowAdvancedButtonClick:(id)sender {
+    
+    isWindowExpanded = !isWindowExpanded;  // Toggle state
+    
+    NSScreen *screen = [NSScreen mainScreen];
+    CGFloat windowWidth = counterWindow.frame.size.width;
+    CGFloat collapsedHeight = 300.0;
+    CGFloat expandedHeight = 510.0;  // XIB size
+    
+    // Calculate new height based on state
+    CGFloat newHeight = isWindowExpanded ? expandedHeight : collapsedHeight;
+    
+    // Keep x the same, adjust y so window expands upward
+    CGFloat x = counterWindow.frame.origin.x;
+    CGFloat newY = screen.frame.size.height - newHeight;
+    
+    // Animate the window resize with smooth easing
+    [NSAnimationContext beginGrouping];
+    [[NSAnimationContext currentContext] setDuration:0.35];
+    [[NSAnimationContext currentContext] setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+    [[counterWindow animator] setFrame:NSMakeRect(x, newY, windowWidth, newHeight) display:YES];
+    [NSAnimationContext endGrouping];
+    
+    // Animate label visibility with fade effect
+    [self animateAdvancedLabelsVisibility];
+    
+    // Update button image
+    [self updateAdvancedButtonImage];
+}
+
+
+// ==============================
+// Animate advanced labels with fade
+// ==============================
+- (void)animateAdvancedLabelsVisibility {
+    
+    BOOL shouldHide = !isWindowExpanded;
+    
+    // Hide labels instantly when collapsing
+    if (shouldHide) {
+        for (NSTextField *label in @[readingTimeLabel, syllableCountLabel, sentimentLabel, fleshEaseLabel, gradeLabel, spacesLabel]) {
+            if (label != nil) {
+                [label setHidden:YES];
+            }
+        }
+    } else {
+        // Show labels instantly when expanding
+        for (NSTextField *label in @[readingTimeLabel, syllableCountLabel, sentimentLabel, fleshEaseLabel, gradeLabel, spacesLabel]) {
+            if (label != nil) {
+                [label setHidden:NO];
+            }
+        }
+    }
+}
+
+
+// ========================
+// Update advanced button image
+// ========================
+- (void)updateAdvancedButtonImage {
+    
+    if (onShowAdvancedButton == nil) return;
+    
+    if (isWindowExpanded) {
+        // Arrow up (collapse)
+        onShowAdvancedButton.image = [NSImage imageNamed:@"arrow_up_icon"];
+    } else {
+        // Arrow down (expand)
+        onShowAdvancedButton.image = [NSImage imageNamed:@"arrow_down_icon"];
+    }
+}
+
 - (IBAction)clickedTurnOn:(id)sender {
         
     if (isOn == NO) {
         
         isOn = YES;
+        isWindowExpanded = NO;  // Start collapsed
         
         [turnOnBtn setTitle:@"Turn Off"];
                 
         NSScreen *screen = [NSScreen mainScreen];
         
-        [counterWindow setFrame:NSMakeRect(screen.frame.size.width - counterWindow.frame.size.width, screen.frame.size.height - counterWindow.frame.size.height, counterWindow.frame.size.width, counterWindow.frame.size.height) display:YES];
+        // Get current window width
+        CGFloat windowWidth = counterWindow.frame.size.width;
+        CGFloat collapsedHeight = 300.0;
+        
+        // Position at bottom-right, with collapsed height
+        CGFloat x = screen.frame.size.width - windowWidth;
+        CGFloat y = screen.frame.size.height - collapsedHeight;
+        
+        [counterWindow setFrame:NSMakeRect(x, y, windowWidth, collapsedHeight) display:YES];
         
         [counterWindow setCollectionBehavior:NSWindowCollectionBehaviorStationary | NSWindowCollectionBehaviorCanJoinAllSpaces |NSWindowCollectionBehaviorFullScreenAuxiliary];
         
         [counterWindow setLevel: NSStatusWindowLevel];
             
         [counterWindow makeKeyAndOrderFront:self];
+        
+        // Update advanced button image to show arrow-down and hide advanced labels
+        [self updateAdvancedButtonImage];
+        [self animateAdvancedLabelsVisibility];
         
         myTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(onTick) userInfo:nil repeats:YES];
     }
