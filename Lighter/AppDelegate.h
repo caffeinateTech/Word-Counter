@@ -26,6 +26,8 @@
     
     BOOL isWindowExpanded;
     
+    BOOL isDarkTheme;
+    
     NSString *selectedText;
     
     NSTimer *myTimer;
@@ -57,6 +59,12 @@
 
 @property (weak) IBOutlet NSButton *themeButton;
 
+@property (weak) IBOutlet NSButton *quitButton;
+
+@property (weak) IBOutlet NSButton *aboutButton;
+
+@property (weak) IBOutlet NSTextField *aboutTextField;
+
 // count window
 @property (weak) IBOutlet NSPanel *counterWindow;
 
@@ -86,6 +94,9 @@
 
 @property (weak) IBOutlet NSTextField *lettersLabel;
 
+@property (weak) IBOutlet NSTextField *websiteTitleLabel;
+
+@property (weak) IBOutlet NSTextField *contactTitleLabel;
 
 // about view
 - (IBAction)clickedAbout:(id)sender;

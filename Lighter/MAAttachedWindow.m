@@ -3,9 +3,6 @@
 #import "MAAttachedWindow.h"
 #import "AppDelegate.h"
 
-#define MAATTACHEDWINDOW_DEFAULT_BACKGROUND_COLOR [NSColor colorWithCalibratedRed:20.00/255.00 green:20.00/255.00 blue:20.0/255.00 alpha:0.7]
-#define MAATTACHEDWINDOW_DEFAULT_BORDER_COLOR [NSColor colorWithCalibratedRed:217.00/255.00 green:217.00/255.00 blue:217.00/255.00 alpha:1.0]
-
 //#define MAATTACHEDWINDOW_SCALE_FACTOR [[NSScreen mainScreen] backingScaleFactor]
 
 @interface MAAttachedWindow (MAPrivateMethods)

@@ -5,6 +5,14 @@
 
 @class AppDelegate;
 
+// Dark theme colors
+#define MAATTACHEDWINDOW_DEFAULT_BACKGROUND_COLOR [NSColor colorWithCalibratedRed:20.00/255.00 green:20.00/255.00 blue:20.0/255.00 alpha:0.9]
+#define MAATTACHEDWINDOW_DEFAULT_BORDER_COLOR [NSColor colorWithCalibratedRed:217.00/255.00 green:217.00/255.00 blue:217.00/255.00 alpha:1.0]
+
+// Light theme colors
+#define MAATTACHEDWINDOW_LIGHT_BACKGROUND_COLOR [NSColor colorWithCalibratedRed:245.0/255.0 green:245.0/255.0 blue:245.0/255.0 alpha:0.9]
+#define MAATTACHEDWINDOW_LIGHT_BORDER_COLOR [NSColor colorWithCalibratedRed:100.0/255.0 green:100.0/255.0 blue:100.0/255.0 alpha:1.0]
+
 typedef enum _MAWindowPosition {
 
     MAPositionLeft          = NSMinXEdge, // 0
