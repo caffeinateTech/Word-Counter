@@ -59,6 +59,7 @@
   isOn = NO;
   isWindowExpanded = NO;
   isCompactMode = NO;
+  wasWindowExpandedBeforeCompact = NO;
   hasLastExpandedWindowFrame = NO;
   hasOriginalCounterWindowStyleMask = NO;
   // Load theme from user defaults, default to dark theme
@@ -929,6 +930,8 @@
 - (void)compactCounterWindow {
   if (!isOn || counterWindow == nil || ![counterWindow isVisible] || isCompactMode) return;
   
+  // Preserve current advanced/collapsed state so it can be restored on expand.
+  wasWindowExpandedBeforeCompact = isWindowExpanded;
   isCompactMode = YES;
   isWindowExpanded = NO;
   [self animateAdvancedLabelsVisibility];
@@ -976,7 +979,14 @@
   CGFloat rightEdge = NSMaxX(lastExpandedWindowFrame);
   frame.size.width = compactWidth;
   frame.origin.x = rightEdge - compactWidth;
-  [counterWindow setFrame:frame display:YES animate:NO];
+  
+  [compactCounterContentView setAlphaValue:0.0];
+  [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+    context.duration = 0.22;
+    context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [[counterWindow animator] setFrame:frame display:YES];
+    [[compactCounterContentView animator] setAlphaValue:1.0];
+  } completionHandler:nil];
   
   [self showNumbers];
 }
@@ -987,10 +997,17 @@
   BOOL wasCompact = isCompactMode;
   isCompactMode = NO;
   
-  if (onShowAdvancedButton != nil) [onShowAdvancedButton setHidden:NO];
-  if (cutResultsButton != nil) [cutResultsButton setHidden:NO];
+  if (onShowAdvancedButton != nil) {
+    [onShowAdvancedButton setHidden:NO];
+    [onShowAdvancedButton setAlphaValue:0.0];
+  }
+  if (cutResultsButton != nil) {
+    [cutResultsButton setHidden:NO];
+    [cutResultsButton setAlphaValue:0.0];
+  }
   if (fullCounterContentView != nil && [counterWindow contentView] != fullCounterContentView) {
     [counterWindow setContentView:fullCounterContentView];
+    [fullCounterContentView setAlphaValue:0.0];
   }
   if (hasOriginalCounterWindowStyleMask) {
     [counterWindow setStyleMask:originalCounterWindowStyleMask];
@@ -1004,15 +1021,46 @@
   if (wasCompact) {
     CGFloat fullWidth = 260.0;
     [counterWindow setContentMinSize:NSMakeSize(fullWidth, 200.0)];
+    NSRect targetFrame;
     if (hasLastExpandedWindowFrame) {
-      [counterWindow setFrame:lastExpandedWindowFrame display:YES animate:NO];
+      targetFrame = lastExpandedWindowFrame;
     } else {
       NSRect frame = [counterWindow frame];
       frame.size.width = fullWidth;
-      [counterWindow setFrame:frame display:YES animate:NO];
+      targetFrame = frame;
+    }
+    
+    // Restore whichever state user had before compact mode kicked in.
+    isWindowExpanded = wasWindowExpandedBeforeCompact;
+    
+    [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+      context.duration = 0.24;
+      context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+      [[counterWindow animator] setFrame:targetFrame display:YES];
+      if (fullCounterContentView != nil) {
+        [[fullCounterContentView animator] setAlphaValue:1.0];
+      }
+      if (onShowAdvancedButton != nil) {
+        [[onShowAdvancedButton animator] setAlphaValue:1.0];
+      }
+      if (cutResultsButton != nil) {
+        [[cutResultsButton animator] setAlphaValue:1.0];
+      }
+    } completionHandler:nil];
+  } else {
+    if (fullCounterContentView != nil) {
+      [fullCounterContentView setAlphaValue:1.0];
+    }
+    if (onShowAdvancedButton != nil) {
+      [onShowAdvancedButton setAlphaValue:1.0];
+    }
+    if (cutResultsButton != nil) {
+      [cutResultsButton setAlphaValue:1.0];
     }
   }
   
+  // Keep arrow icon synchronized with restored expanded/collapsed state.
+  [self updateAdvancedButtonImage];
   [self animateAdvancedLabelsVisibility];
   [self showNumbers];
 }

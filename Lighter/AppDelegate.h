@@ -56,6 +56,8 @@
     
     NSColor *originalCounterWindowBackgroundColor;
     
+    BOOL wasWindowExpandedBeforeCompact;
+    
     NSArray<NSTextField *> *compactMetricLabels;
     
     NSInteger lastPasteboardChangeCount;
