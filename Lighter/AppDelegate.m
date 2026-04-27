@@ -10,20 +10,39 @@
 #import <ServiceManagement/ServiceManagement.h>
 #import <QuartzCore/QuartzCore.h>
 #import "TextAnalytics.h"
-#import "SentimentAnalyzer.h"
 
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <ApplicationServices/ApplicationServices.h>
 
 @interface AppDelegate ()
 
+- (void)registerInteractionMonitor;
+- (void)unregisterInteractionMonitor;
+- (void)resetInteractionInactivityTimer;
+- (void)userDidInteract;
+- (void)compactCounterWindow;
+- (void)expandCounterWindow;
+- (NSString *)formattedMetricWithTitle:(NSString *)title count:(NSUInteger)count;
+- (void)buildCompactMetricsViewWithWidth:(CGFloat)compactWidth height:(CGFloat)compactHeight;
+- (void)updateCompactMetricValuesWithCharacters:(NSUInteger)characters
+                       charactersWithoutSpaces:(NSUInteger)charactersWithoutSpaces
+                                        letters:(NSUInteger)letters
+                                          words:(NSUInteger)words
+                                    uniqueWords:(NSUInteger)uniqueWords
+                                      sentences:(NSUInteger)sentences
+                                          lines:(NSUInteger)lines
+                                         spaces:(NSUInteger)spaces
+                                 readingSeconds:(NSUInteger)readingSeconds
+                                       syllables:(NSUInteger)syllables
+                           hasReadabilityValues:(BOOL)hasReadabilityValues;
+
 @end
 
 @implementation AppDelegate
 
-@synthesize aboutWindow, raresBtn, popUpView, attachedWindow, popupShowed, websiteBtn;
+@synthesize aboutWindow, raresBtn, popUpView, attachedWindow, popupShowed, websiteBtn, launchAtLoginCheckboxButton, autoMinimizeCheckboxButton;
 
-@synthesize counterWindow, wordsLabel, linesLabel, uniqueWordsLabel, characterLabel, sentencesLabel, charactersWithoutSpacesLabel, spacesLabel, turnOnBtn, readingTimeLabel, gradeLabel, fleshEaseLabel, sentimentLabel, syllableCountLabel, lettersLabel, onShowAdvancedButton, cutResultsButton, themeButton, quitButton, aboutButton, aboutTextField, websiteTitleLabel, contactTitleLabel;
+@synthesize counterWindow, wordsLabel, linesLabel, uniqueWordsLabel, characterLabel, sentencesLabel, charactersWithoutSpacesLabel, spacesLabel, turnOnBtn, readingTimeLabel, syllableCountLabel, lettersLabel, onShowAdvancedButton, cutResultsButton, themeButton, quitButton, aboutButton, aboutTextField, websiteTitleLabel, contactTitleLabel;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 
@@ -39,6 +58,10 @@
   popupShowed = NO;
   isOn = NO;
   isWindowExpanded = NO;
+  isCompactMode = NO;
+  wasWindowExpandedBeforeCompact = NO;
+  hasLastExpandedWindowFrame = NO;
+  hasOriginalCounterWindowStyleMask = NO;
   // Load theme from user defaults, default to dark theme
   isDarkTheme = [[NSUserDefaults standardUserDefaults] objectForKey:@"isDarkTheme"] != nil ? [[NSUserDefaults standardUserDefaults] boolForKey:@"isDarkTheme"] : YES;
   lastPasteboardChangeCount = 0;
@@ -100,6 +123,32 @@
 
   // Apply initial theme
   [self applyTheme];
+  
+  // Setup launch at login checkbox state
+  if (launchAtLoginCheckboxButton != nil) {
+    SMAppService *appService = [SMAppService mainAppService];
+    if (appService.status == SMAppServiceStatusEnabled) {
+      [launchAtLoginCheckboxButton setState:NSControlStateValueOn];
+    } else {
+      [launchAtLoginCheckboxButton setState:NSControlStateValueOff];
+    }
+  }
+  
+  // Load auto-minimize state from user defaults, default to YES (enabled)
+  BOOL isAutoMinimizeEnabled = [[NSUserDefaults standardUserDefaults] objectForKey:@"isAutoMinimizeEnabled"] != nil ? [[NSUserDefaults standardUserDefaults] boolForKey:@"isAutoMinimizeEnabled"] : YES;
+  // Save the state to ensure future checks return the correct value
+  [[NSUserDefaults standardUserDefaults] setBool:isAutoMinimizeEnabled forKey:@"isAutoMinimizeEnabled"];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+  if (autoMinimizeCheckboxButton != nil) {
+    [autoMinimizeCheckboxButton setState:isAutoMinimizeEnabled ? NSControlStateValueOn : NSControlStateValueOff];
+  }
+  
+  if (counterWindow != nil) {
+    originalCounterWindowStyleMask = [counterWindow styleMask];
+    hasOriginalCounterWindowStyleMask = YES;
+    fullCounterContentView = [counterWindow contentView];
+    originalCounterWindowBackgroundColor = [counterWindow backgroundColor];
+  }
 }
 
 
@@ -124,6 +173,54 @@
 }
 
 
+- (IBAction)onLaunchAtLoginButtonClicked:(id)sender {
+  if (launchAtLoginCheckboxButton == nil) return;
+  
+  BOOL shouldEnable = [launchAtLoginCheckboxButton state] == NSControlStateValueOn;
+  NSError *error = nil;
+  
+  SMAppService *appService = [SMAppService mainAppService];
+  BOOL success = NO;
+  
+  if (shouldEnable) {
+    success = [appService registerAndReturnError:&error];
+  } else {
+    success = [appService unregisterAndReturnError:&error];
+  }
+  
+  if (!success && error) {
+    NSLog(@"Error setting launch at login: %@", error.localizedDescription);
+    // Revert checkbox state on error
+    [launchAtLoginCheckboxButton setState:!shouldEnable ? NSControlStateValueOn : NSControlStateValueOff];
+  }
+}
+
+- (IBAction)onAutoMinimizeCheckboxButtonClicked:(id)sender {
+  BOOL isAutoMinimizeEnabled = [autoMinimizeCheckboxButton state] == NSControlStateValueOn;
+  
+  // Save state to NSUserDefaults
+  [[NSUserDefaults standardUserDefaults] setBool:isAutoMinimizeEnabled forKey:@"isAutoMinimizeEnabled"];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+  
+  if (!isAutoMinimizeEnabled) {
+    // Auto-minimize disabled: stop the timer and expand if compact
+    if (interactionInactivityTimer != nil) {
+      [interactionInactivityTimer invalidate];
+      interactionInactivityTimer = nil;
+    }
+    
+    // If in compact mode, expand the window
+    if (isCompactMode && isOn && counterWindow != nil && [counterWindow isVisible]) {
+      [self expandCounterWindow];
+    }
+  } else {
+    // Auto-minimize enabled: restart the timer if window is on
+    if (isOn && counterWindow != nil && [counterWindow isVisible]) {
+      [self resetInteractionInactivityTimer];
+    }
+  }
+}
+
 - (IBAction)onThemeButtonClicked:(id)sender {
 
   isDarkTheme = !isDarkTheme;  // Toggle theme
@@ -146,8 +243,8 @@
     NSMutableArray *labels = [NSMutableArray array];
     for (NSTextField *label in @[wordsLabel, sentencesLabel, linesLabel, characterLabel,
                                  charactersWithoutSpacesLabel, spacesLabel, uniqueWordsLabel,
-                                 lettersLabel, readingTimeLabel, gradeLabel, fleshEaseLabel,
-                                 sentimentLabel, syllableCountLabel, aboutTextField, websiteTitleLabel, contactTitleLabel]) {
+                                 lettersLabel, readingTimeLabel, syllableCountLabel,
+                                 aboutTextField, websiteTitleLabel, contactTitleLabel]) {
       if (label != nil) {
         [labels addObject:label];
       }
@@ -180,6 +277,16 @@
       //[attachedWindow setBackgroundColor:MAATTACHEDWINDOW_DEFAULT_BACKGROUND_COLOR];
       [attachedWindow setBorderColor:MAATTACHEDWINDOW_DEFAULT_BORDER_COLOR];
     }
+    
+    // Compact mode theme state (persist across mode switches)
+    if (compactMetricValueLabels != nil) {
+      for (NSTextField *label in compactMetricValueLabels) {
+        [label setTextColor:[NSColor whiteColor]];
+      }
+    }
+    if (compactCounterContentView != nil && compactCounterContentView.layer != nil) {
+      compactCounterContentView.layer.backgroundColor = [[NSColor colorWithCalibratedWhite:0.0 alpha:0.9] CGColor];
+    }
   } else {
     // Light theme: black text
     NSColor *textColor = [NSColor blackColor];
@@ -188,8 +295,8 @@
     NSMutableArray *labels = [NSMutableArray array];
     for (NSTextField *label in @[wordsLabel, sentencesLabel, linesLabel, characterLabel,
                                  charactersWithoutSpacesLabel, spacesLabel, uniqueWordsLabel,
-                                 lettersLabel, readingTimeLabel, gradeLabel, fleshEaseLabel,
-                                 sentimentLabel, syllableCountLabel, aboutTextField, websiteTitleLabel, contactTitleLabel]) {
+                                 lettersLabel, readingTimeLabel, syllableCountLabel,
+                                 aboutTextField, websiteTitleLabel, contactTitleLabel]) {
       if (label != nil) {
         [labels addObject:label];
       }
@@ -222,14 +329,25 @@
       //[attachedWindow setBackgroundColor:MAATTACHEDWINDOW_LIGHT_BACKGROUND_COLOR];
       [attachedWindow setBorderColor:MAATTACHEDWINDOW_LIGHT_BORDER_COLOR];
     }
+    
+    // Compact mode theme state (persist across mode switches)
+    if (compactMetricValueLabels != nil) {
+      for (NSTextField *label in compactMetricValueLabels) {
+        [label setTextColor:[NSColor blackColor]];
+      }
+    }
+    if (compactCounterContentView != nil && compactCounterContentView.layer != nil) {
+      compactCounterContentView.layer.backgroundColor = [[NSColor colorWithCalibratedWhite:1.0 alpha:0.9] CGColor];
+    }
   }
 }
 
 - (IBAction)onCopyButtonClicked:(id)sender {
+  [self userDidInteract];
 
   NSMutableString *resultsToCopy = [NSMutableString string];
 
-  // Copy in specific order: characters, characters without spaces, letters, words, unique words, sentences, lines, spaces, reading time, grade level, flesch ease, sentiment, syllables
+  // Copy in specific order: characters, characters without spaces, letters, words, unique words, sentences, lines, spaces, reading time, syllables
   if (characterLabel) [resultsToCopy appendFormat:@"%@\n", characterLabel.stringValue];
   if (charactersWithoutSpacesLabel) [resultsToCopy appendFormat:@"%@\n", charactersWithoutSpacesLabel.stringValue];
   if (lettersLabel) [resultsToCopy appendFormat:@"%@\n", lettersLabel.stringValue];
@@ -239,9 +357,6 @@
   if (linesLabel) [resultsToCopy appendFormat:@"%@\n", linesLabel.stringValue];
   if (spacesLabel && !spacesLabel.hidden) [resultsToCopy appendFormat:@"%@\n", spacesLabel.stringValue];
   if (readingTimeLabel && !readingTimeLabel.hidden) [resultsToCopy appendFormat:@"%@\n", readingTimeLabel.stringValue];
-  if (gradeLabel && !gradeLabel.hidden) [resultsToCopy appendFormat:@"%@\n", gradeLabel.stringValue];
-  if (fleshEaseLabel && !fleshEaseLabel.hidden) [resultsToCopy appendFormat:@"%@\n", fleshEaseLabel.stringValue];
-  if (sentimentLabel && !sentimentLabel.hidden) [resultsToCopy appendFormat:@"%@\n", sentimentLabel.stringValue];
   if (syllableCountLabel && !syllableCountLabel.hidden) [resultsToCopy appendFormat:@"%@\n", syllableCountLabel.stringValue];
 
   // Copy to pasteboard
@@ -251,13 +366,14 @@
 }
 
 - (IBAction)onShowAdvancedButtonClick:(id)sender {
+  [self userDidInteract];
 
   isWindowExpanded = !isWindowExpanded;  // Toggle state
 
   NSScreen *screen = [NSScreen mainScreen];
   CGFloat windowWidth = counterWindow.frame.size.width;
   CGFloat collapsedHeight = 300.0;
-  CGFloat expandedHeight = 510.0;  // XIB size
+  CGFloat expandedHeight = 400.0;  // XIB size
 
   // Calculate new height based on state
   CGFloat newHeight = isWindowExpanded ? expandedHeight : collapsedHeight;
@@ -268,7 +384,7 @@
 
   // Animate the window resize with smooth easing
   [NSAnimationContext beginGrouping];
-  [[NSAnimationContext currentContext] setDuration:0.35];
+  [[NSAnimationContext currentContext] setDuration:0.4];
   [[NSAnimationContext currentContext] setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
   [[counterWindow animator] setFrame:NSMakeRect(x, newY, windowWidth, newHeight) display:YES];
   [NSAnimationContext endGrouping];
@@ -290,14 +406,14 @@
 
   // Hide labels instantly when collapsing
   if (shouldHide) {
-    for (NSTextField *label in @[readingTimeLabel, syllableCountLabel, sentimentLabel, fleshEaseLabel, gradeLabel, spacesLabel]) {
+    for (NSTextField *label in @[readingTimeLabel, syllableCountLabel, spacesLabel]) {
       if (label != nil) {
         [label setHidden:YES];
       }
     }
   } else {
     // Show labels instantly when expanding
-    for (NSTextField *label in @[readingTimeLabel, syllableCountLabel, sentimentLabel, fleshEaseLabel, gradeLabel, spacesLabel]) {
+    for (NSTextField *label in @[readingTimeLabel, syllableCountLabel, spacesLabel]) {
       if (label != nil) {
         [label setHidden:NO];
       }
@@ -328,13 +444,17 @@
 
     isOn = YES;
     isWindowExpanded = NO;  // Start collapsed
+    isCompactMode = NO;
+    if (fullCounterContentView != nil && [counterWindow contentView] != fullCounterContentView) {
+      [counterWindow setContentView:fullCounterContentView];
+    }
 
     [turnOnBtn setTitle:@"Turn Off"];
 
     NSScreen *screen = [NSScreen mainScreen];
 
-    // Get current window width
-    CGFloat windowWidth = counterWindow.frame.size.width;
+    // Always start at full width when turning on.
+    CGFloat windowWidth = 260.0;
     CGFloat collapsedHeight = 300.0;
 
     // Position at bottom-right, with collapsed height
@@ -342,6 +462,16 @@
     CGFloat y = screen.frame.size.height - collapsedHeight;
 
     [counterWindow setFrame:NSMakeRect(x, y, windowWidth, collapsedHeight) display:YES];
+    lastExpandedWindowFrame = [counterWindow frame];
+    hasLastExpandedWindowFrame = YES;
+    if (hasOriginalCounterWindowStyleMask) {
+      [counterWindow setStyleMask:originalCounterWindowStyleMask];
+    }
+    [counterWindow setOpaque:YES];
+    [counterWindow setAlphaValue:1.0];
+    if (originalCounterWindowBackgroundColor != nil) {
+      [counterWindow setBackgroundColor:originalCounterWindowBackgroundColor];
+    }
 
     [counterWindow setCollectionBehavior:NSWindowCollectionBehaviorStationary | NSWindowCollectionBehaviorCanJoinAllSpaces |NSWindowCollectionBehaviorFullScreenAuxiliary];
 
@@ -352,6 +482,8 @@
     // Update advanced button image to show arrow-down and hide advanced labels
     [self updateAdvancedButtonImage];
     [self animateAdvancedLabelsVisibility];
+    [self registerInteractionMonitor];
+    [self resetInteractionInactivityTimer];
 
     myTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(onTick) userInfo:nil repeats:YES];
   }
@@ -362,6 +494,16 @@
     [turnOnBtn setTitle:@"Turn On"];
 
     [counterWindow orderOut:nil];
+    if (fullCounterContentView != nil && [counterWindow contentView] != fullCounterContentView) {
+      [counterWindow setContentView:fullCounterContentView];
+    }
+    [self unregisterInteractionMonitor];
+    if (interactionInactivityTimer != nil) {
+      [interactionInactivityTimer invalidate];
+      interactionInactivityTimer = nil;
+    }
+    isCompactMode = NO;
+    hasLastExpandedWindowFrame = NO;
 
     if (myTimer != nil) {
 
@@ -378,6 +520,11 @@
 // refresh every second numbers
 // ============================
 - (void)onTick {
+  NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+  if ([pasteboard changeCount] != lastPasteboardChangeCount) {
+    lastPasteboardChangeCount = [pasteboard changeCount];
+    [self userDidInteract];
+  }
 
   [self stringForType];
 
@@ -587,27 +734,33 @@
   NSUInteger characters = [self numberOfCharacters];
   NSUInteger charactersWithoutSpaces = [self numberOfCharactersWithoutSpaces];
   NSUInteger spaces = [self numberOfSpaces];
-
-  // Update core metrics
-  [sentencesLabel setStringValue:[NSString stringWithFormat:@"Sentences: %lu", (unsigned long)sentences]];
-  [linesLabel setStringValue:[NSString stringWithFormat:@"Lines: %lu", (unsigned long)lines]];
-  [wordsLabel setStringValue:[NSString stringWithFormat:@"Words: %lu", (unsigned long)words]];
-  [uniqueWordsLabel setStringValue:[NSString stringWithFormat:@"Unique words: %lu", (unsigned long)uniqueWords]];
-  [characterLabel setStringValue:[NSString stringWithFormat:@"Characters: %lu", (unsigned long)characters]];
-  [charactersWithoutSpacesLabel setStringValue:[NSString stringWithFormat:@"Characters without spaces: %lu", (unsigned long)charactersWithoutSpaces]];
-  [spacesLabel setStringValue:[NSString stringWithFormat:@"Spaces: %lu", (unsigned long)spaces]];
-
-  // Letter count (alphabetic characters only)
   NSUInteger letters = [self numberOfLetters];
-  if (lettersLabel != nil) {
-    [lettersLabel setStringValue:[NSString stringWithFormat:@"Letters: %lu", (unsigned long)letters]];
+  BOOL hasReadabilityValues = (words > 0 && sentences > 0);
+  NSUInteger readingSeconds = 0;
+  NSUInteger syllables = 0;
+  if (hasReadabilityValues) {
+    readingSeconds = [TextAnalytics readingTimeInSecondsForWordCount:words wordsPerMinute:200];
+    syllables = [TextAnalytics syllableCountForText:selectedText];
   }
 
-  // Calculate and display readability metrics (if outlets exist)
+  // Update core metrics
+  [sentencesLabel setStringValue:[self formattedMetricWithTitle:@"Sentences" count:sentences]];
+  [linesLabel setStringValue:[self formattedMetricWithTitle:@"Lines" count:lines]];
+  [wordsLabel setStringValue:[self formattedMetricWithTitle:@"Words" count:words]];
+  [uniqueWordsLabel setStringValue:[self formattedMetricWithTitle:@"Unique words" count:uniqueWords]];
+  [characterLabel setStringValue:[self formattedMetricWithTitle:@"Characters" count:characters]];
+  [charactersWithoutSpacesLabel setStringValue:[self formattedMetricWithTitle:@"Characters without spaces" count:charactersWithoutSpaces]];
+  [spacesLabel setStringValue:[self formattedMetricWithTitle:@"Spaces" count:spaces]];
+
+  // Letter count (alphabetic characters only)
+  if (lettersLabel != nil) {
+    [lettersLabel setStringValue:[self formattedMetricWithTitle:@"Letters" count:letters]];
+  }
+
+  // Calculate and display remaining readability metrics (if outlets exist)
   if (words > 0 && sentences > 0) {
 
     // Reading time
-    NSUInteger readingSeconds = [TextAnalytics readingTimeInSecondsForWordCount:words wordsPerMinute:200];
     if (readingTimeLabel != nil) {
       if (readingSeconds < 60) {
         [readingTimeLabel setStringValue:[NSString stringWithFormat:@"Reading Time: %lus", (unsigned long)readingSeconds]];
@@ -619,60 +772,32 @@
     }
 
     // Syllable count
-    NSUInteger syllables = [TextAnalytics syllableCountForText:selectedText];
     if (syllableCountLabel != nil) {
       [syllableCountLabel setStringValue:[NSString stringWithFormat:@"Syllables: %lu", (unsigned long)syllables]];
     }
 
-    // Grade level & difficulty
-    double gradeLevel = [TextAnalytics fleschKincaidGradeLevelForText:selectedText words:words sentences:sentences];
-    ReadabilityDifficulty difficulty = [TextAnalytics difficultyLevelForGradeLevel:gradeLevel];
-    NSString *emoji = [TextAnalytics difficultyEmojiForLevel:difficulty];
-
-    if (gradeLabel != nil) {
-      [gradeLabel setStringValue:[NSString stringWithFormat:@"Grade Level: %@ %.1f", emoji, gradeLevel]];
-    }
-
-    // Flesch Reading Ease
-    double readingEase = [TextAnalytics fleschReadingEaseForText:selectedText words:words sentences:sentences];
-    if (fleshEaseLabel != nil) {
-      NSString *easeDescription;
-      if (readingEase >= 90) {
-        easeDescription = @"Very Easy";
-      } else if (readingEase >= 80) {
-        easeDescription = @"Easy";
-      } else if (readingEase >= 70) {
-        easeDescription = @"Standard";
-      } else if (readingEase >= 60) {
-        easeDescription = @"Somewhat Difficult";
-      } else {
-        easeDescription = @"Very Difficult";
-      }
-      [fleshEaseLabel setStringValue:[NSString stringWithFormat:@"Flesch Ease: %.1f (%@)", readingEase, easeDescription]];
-    }
   } else {
-    // Clear readability metrics if not enough text
+    // Clear metrics if not enough text
     if (readingTimeLabel != nil) {
       [readingTimeLabel setStringValue:@"Reading Time: —"];
     }
     if (syllableCountLabel != nil) {
       [syllableCountLabel setStringValue:@"Syllables: —"];
     }
-    if (gradeLabel != nil) {
-      [gradeLabel setStringValue:@"Grade Level: —"];
-    }
-    if (fleshEaseLabel != nil) {
-      [fleshEaseLabel setStringValue:@"Flesch Ease: —"];
-    }
   }
-
-  // Sentiment analysis (if outlet exists and text is valid)
-  if (sentimentLabel != nil && words >= 5) {
-    SentimentResult *sentiment = [SentimentAnalyzer analyzeSentimentForText:selectedText];
-    NSString *sentimentDisplay = [SentimentAnalyzer sentimentSummaryFromResult:sentiment];
-    [sentimentLabel setStringValue:sentimentDisplay];
-  } else if (sentimentLabel != nil) {
-    [sentimentLabel setStringValue:@"Sentiment: —"];
+  
+  if (isCompactMode) {
+    [self updateCompactMetricValuesWithCharacters:characters
+                         charactersWithoutSpaces:charactersWithoutSpaces
+                                          letters:letters
+                                            words:words
+                                      uniqueWords:uniqueWords
+                                        sentences:sentences
+                                            lines:lines
+                                           spaces:spaces
+                                   readingSeconds:readingSeconds
+                                         syllables:syllables
+                             hasReadabilityValues:hasReadabilityValues];
   }
 }
 
@@ -743,17 +868,6 @@
   if (readingTimeLabel != nil) {
     [readingTimeLabel setAccessibilityLabel:@"Estimated reading time"];
   }
-  if (gradeLabel != nil) {
-    [gradeLabel setAccessibilityLabel:@"Grade level"];
-  }
-  if (fleshEaseLabel != nil) {
-    [fleshEaseLabel setAccessibilityLabel:@"Flesch reading ease score"];
-  }
-
-  // Sentiment
-  if (sentimentLabel != nil) {
-    [sentimentLabel setAccessibilityLabel:@"Text sentiment analysis"];
-  }
 
   // Buttons
   [turnOnBtn setAccessibilityLabel:@"Toggle text counter"];
@@ -818,6 +932,295 @@
   if (debounceTimer != nil) {
     [debounceTimer invalidate];
     debounceTimer = nil;
+  }
+  
+  if (interactionInactivityTimer != nil) {
+    [interactionInactivityTimer invalidate];
+    interactionInactivityTimer = nil;
+  }
+  
+  [self unregisterInteractionMonitor];
+}
+
+// =======================
+// Compact mode formatting
+// =======================
+- (NSString *)formattedMetricWithTitle:(NSString *)title count:(NSUInteger)count {
+  if (isCompactMode) {
+    return [NSString stringWithFormat:@"%lu", (unsigned long)count];
+  }
+  return [NSString stringWithFormat:@"%@: %lu", title, (unsigned long)count];
+}
+
+// =======================
+// User interaction tracker
+// =======================
+- (void)registerInteractionMonitor {
+  if (interactionMonitor != nil) return;
+  
+  __weak typeof(self) weakSelf = self;
+  interactionMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDown | NSEventMaskRightMouseDown) handler:^NSEvent * _Nullable(NSEvent * _Nonnull event) {
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    if (strongSelf == nil || !isOn || counterWindow == nil || ![counterWindow isVisible]) {
+      return event;
+    }
+    
+    NSPoint mouseLocation = [NSEvent mouseLocation];
+    if (NSPointInRect(mouseLocation, [counterWindow frame])) {
+      [strongSelf userDidInteract];
+    }
+    return event;
+  }];
+}
+
+- (void)unregisterInteractionMonitor {
+  if (interactionMonitor != nil) {
+    [NSEvent removeMonitor:interactionMonitor];
+    interactionMonitor = nil;
+  }
+}
+
+- (void)resetInteractionInactivityTimer {
+  // Only reset if auto-minimize is enabled
+  BOOL isAutoMinimizeEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"isAutoMinimizeEnabled"];
+  if (!isAutoMinimizeEnabled) {
+    return;
+  }
+  
+  if (interactionInactivityTimer != nil) {
+    [interactionInactivityTimer invalidate];
+  }
+  interactionInactivityTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(compactCounterWindow) userInfo:nil repeats:NO];
+}
+
+- (void)userDidInteract {
+  if (!isOn || counterWindow == nil || ![counterWindow isVisible]) return;
+  
+  [self expandCounterWindow];
+  [self resetInteractionInactivityTimer];
+}
+
+- (void)compactCounterWindow {
+  BOOL isAutoMinimizeEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"isAutoMinimizeEnabled"];
+  if (!isOn || counterWindow == nil || ![counterWindow isVisible] || isCompactMode || !isAutoMinimizeEnabled) return;
+  
+  // Preserve current advanced/collapsed state so it can be restored on expand.
+  wasWindowExpandedBeforeCompact = isWindowExpanded;
+  isCompactMode = YES;
+  isWindowExpanded = NO;
+  [self animateAdvancedLabelsVisibility];
+  [self updateAdvancedButtonImage];
+  
+  if (onShowAdvancedButton != nil) [onShowAdvancedButton setHidden:YES];
+  if (cutResultsButton != nil) [cutResultsButton setHidden:YES];
+  
+  // Save current frame to restore exact position/size on expand.
+  lastExpandedWindowFrame = [counterWindow frame];
+  hasLastExpandedWindowFrame = YES;
+  
+  if (!hasOriginalCounterWindowStyleMask) {
+    originalCounterWindowStyleMask = [counterWindow styleMask];
+    hasOriginalCounterWindowStyleMask = YES;
+  }
+  
+  CGFloat compactWidth = 50.0;
+  CGFloat compactHeight = [counterWindow frame].size.height;
+  [counterWindow setContentMinSize:NSMakeSize(compactWidth, compactHeight)];
+  
+  // Replace full constrained content with a minimal compact content view so
+  // Auto Layout constraints don't enforce the original window width.
+  if (fullCounterContentView == nil) {
+    fullCounterContentView = [counterWindow contentView];
+  }
+  if (compactCounterContentView == nil) {
+    compactCounterContentView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, compactWidth, compactHeight)];
+    [compactCounterContentView setWantsLayer:YES];
+    if (isDarkTheme) {
+      compactCounterContentView.layer.backgroundColor = [[NSColor colorWithCalibratedWhite:0.0 alpha:0.9] CGColor];
+    } else {
+      compactCounterContentView.layer.backgroundColor = [[NSColor colorWithCalibratedWhite:1.0 alpha:0.9] CGColor];
+    }
+    [self buildCompactMetricsViewWithWidth:compactWidth height:compactHeight];
+  }
+  [compactCounterContentView setFrame:NSMakeRect(0, 0, compactWidth, compactHeight)];
+  [counterWindow setContentView:compactCounterContentView];
+  
+  [counterWindow setStyleMask:NSWindowStyleMaskBorderless];
+  [counterWindow setOpaque:NO];
+  [counterWindow setBackgroundColor:[NSColor clearColor]];
+  [counterWindow setAlphaValue:0.9];
+  NSRect frame = lastExpandedWindowFrame;
+  CGFloat rightEdge = NSMaxX(lastExpandedWindowFrame);
+  frame.size.width = compactWidth;
+  frame.origin.x = rightEdge - compactWidth;
+  
+  [compactCounterContentView setAlphaValue:0.0];
+  [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+    context.duration = 0.3;
+    context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [[counterWindow animator] setFrame:frame display:YES];
+    [[compactCounterContentView animator] setAlphaValue:1.0];
+  } completionHandler:nil];
+  
+  [self showNumbers];
+}
+
+- (void)expandCounterWindow {
+  if (!isOn || counterWindow == nil || ![counterWindow isVisible]) return;
+  
+  BOOL wasCompact = isCompactMode;
+  isCompactMode = NO;
+  
+  if (onShowAdvancedButton != nil) {
+    [onShowAdvancedButton setHidden:NO];
+    [onShowAdvancedButton setAlphaValue:0.0];
+  }
+  if (cutResultsButton != nil) {
+    [cutResultsButton setHidden:NO];
+    [cutResultsButton setAlphaValue:0.0];
+  }
+  if (fullCounterContentView != nil && [counterWindow contentView] != fullCounterContentView) {
+    [counterWindow setContentView:fullCounterContentView];
+    [fullCounterContentView setAlphaValue:0.0];
+  }
+  if (hasOriginalCounterWindowStyleMask) {
+    [counterWindow setStyleMask:originalCounterWindowStyleMask];
+  }
+  [counterWindow setOpaque:YES];
+  [counterWindow setAlphaValue:1.0];
+  if (originalCounterWindowBackgroundColor != nil) {
+    [counterWindow setBackgroundColor:originalCounterWindowBackgroundColor];
+  }
+  
+  if (wasCompact) {
+    CGFloat fullWidth = 260.0;
+    [counterWindow setContentMinSize:NSMakeSize(fullWidth, 200.0)];
+    NSRect targetFrame;
+    if (hasLastExpandedWindowFrame) {
+      targetFrame = lastExpandedWindowFrame;
+    } else {
+      NSRect frame = [counterWindow frame];
+      frame.size.width = fullWidth;
+      targetFrame = frame;
+    }
+    
+    // Restore whichever state user had before compact mode kicked in.
+    isWindowExpanded = wasWindowExpandedBeforeCompact;
+    
+    [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+      context.duration = 0.35;
+      context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+      [[counterWindow animator] setFrame:targetFrame display:YES];
+      if (fullCounterContentView != nil) {
+        [[fullCounterContentView animator] setAlphaValue:1.0];
+      }
+      if (onShowAdvancedButton != nil) {
+        [[onShowAdvancedButton animator] setAlphaValue:1.0];
+      }
+      if (cutResultsButton != nil) {
+        [[cutResultsButton animator] setAlphaValue:1.0];
+      }
+    } completionHandler:nil];
+  } else {
+    if (fullCounterContentView != nil) {
+      [fullCounterContentView setAlphaValue:1.0];
+    }
+    if (onShowAdvancedButton != nil) {
+      [onShowAdvancedButton setAlphaValue:1.0];
+    }
+    if (cutResultsButton != nil) {
+      [cutResultsButton setAlphaValue:1.0];
+    }
+  }
+  
+  // Keep arrow icon synchronized with restored expanded/collapsed state.
+  [self updateAdvancedButtonImage];
+  [self animateAdvancedLabelsVisibility];
+  [self showNumbers];
+}
+
+- (void)buildCompactMetricsViewWithWidth:(CGFloat)compactWidth height:(CGFloat)compactHeight {
+  for (NSView *subview in [compactCounterContentView subviews]) {
+    [subview removeFromSuperview];
+  }
+  
+  compactMetricValueLabels = [NSMutableArray array];
+  NSArray *tooltips = @[
+    @"Characters",
+    @"Characters without spaces",
+    @"Letters",
+    @"Words",
+    @"Unique words",
+    @"Sentences",
+    @"Lines",
+    @"Spaces",
+    @"Reading time (seconds)",
+    @"Syllables"
+  ];
+  
+  NSStackView *stackView = [[NSStackView alloc] initWithFrame:NSMakeRect(0, 0, compactWidth, compactHeight)];
+  [stackView setOrientation:NSUserInterfaceLayoutOrientationVertical];
+  [stackView setDistribution:NSStackViewDistributionFillEqually];
+  [stackView setAlignment:NSLayoutAttributeCenterX];
+  [stackView setSpacing:10.0];
+  [stackView setTranslatesAutoresizingMaskIntoConstraints:NO];
+  
+  for (NSString *tooltip in tooltips) {
+    NSTextField *valueLabel = [[NSTextField alloc] initWithFrame:NSZeroRect];
+    [valueLabel setBezeled:NO];
+    [valueLabel setDrawsBackground:NO];
+    [valueLabel setEditable:NO];
+    [valueLabel setSelectable:NO];
+    [valueLabel setAlignment:NSTextAlignmentCenter];
+    [valueLabel setLineBreakMode:NSLineBreakByTruncatingMiddle];
+    [valueLabel setFont:[NSFont systemFontOfSize:14.0]];
+    [valueLabel setStringValue:@"0"];
+    [valueLabel setTextColor:isDarkTheme ? [NSColor whiteColor] : [NSColor blackColor]];
+    [valueLabel setToolTip:tooltip];
+    [compactMetricValueLabels addObject:valueLabel];
+    [stackView addArrangedSubview:valueLabel];
+  }
+  
+  [compactCounterContentView addSubview:stackView];
+  [NSLayoutConstraint activateConstraints:@[
+    [stackView.leadingAnchor constraintEqualToAnchor:compactCounterContentView.leadingAnchor],
+    [stackView.trailingAnchor constraintEqualToAnchor:compactCounterContentView.trailingAnchor],
+    [stackView.topAnchor constraintEqualToAnchor:compactCounterContentView.topAnchor constant:2.0],
+    [stackView.bottomAnchor constraintEqualToAnchor:compactCounterContentView.bottomAnchor constant:-2.0]
+  ]];
+}
+
+- (void)updateCompactMetricValuesWithCharacters:(NSUInteger)characters
+                       charactersWithoutSpaces:(NSUInteger)charactersWithoutSpaces
+                                        letters:(NSUInteger)letters
+                                          words:(NSUInteger)words
+                                    uniqueWords:(NSUInteger)uniqueWords
+                                      sentences:(NSUInteger)sentences
+                                          lines:(NSUInteger)lines
+                                         spaces:(NSUInteger)spaces
+                                 readingSeconds:(NSUInteger)readingSeconds
+                                       syllables:(NSUInteger)syllables
+                           hasReadabilityValues:(BOOL)hasReadabilityValues {
+  if (compactMetricValueLabels == nil || [compactMetricValueLabels count] < 10) {
+    return;
+  }
+  
+  NSArray *values = @[
+    [NSString stringWithFormat:@"%lu", (unsigned long)characters],
+    [NSString stringWithFormat:@"%lu", (unsigned long)charactersWithoutSpaces],
+    [NSString stringWithFormat:@"%lu", (unsigned long)letters],
+    [NSString stringWithFormat:@"%lu", (unsigned long)words],
+    [NSString stringWithFormat:@"%lu", (unsigned long)uniqueWords],
+    [NSString stringWithFormat:@"%lu", (unsigned long)sentences],
+    [NSString stringWithFormat:@"%lu", (unsigned long)lines],
+    [NSString stringWithFormat:@"%lu", (unsigned long)spaces],
+    hasReadabilityValues ? [NSString stringWithFormat:@"%lu", (unsigned long)readingSeconds] : @"-",
+    hasReadabilityValues ? [NSString stringWithFormat:@"%lu", (unsigned long)syllables] : @"-"
+  ];
+  
+  for (NSUInteger i = 0; i < [compactMetricValueLabels count] && i < [values count]; i++) {
+    NSTextField *label = compactMetricValueLabels[i];
+    [label setStringValue:values[i]];
   }
 }
 

@@ -34,6 +34,32 @@
     
     NSTimer *debounceTimer;
     
+    NSTimer *interactionInactivityTimer;
+    
+    id interactionMonitor;
+    
+    BOOL isCompactMode;
+    
+    NSRect lastExpandedWindowFrame;
+    
+    BOOL hasLastExpandedWindowFrame;
+    
+    NSWindowStyleMask originalCounterWindowStyleMask;
+    
+    BOOL hasOriginalCounterWindowStyleMask;
+    
+    NSView *fullCounterContentView;
+    
+    NSView *compactCounterContentView;
+    
+    NSMutableArray *compactMetricValueLabels;
+    
+    NSColor *originalCounterWindowBackgroundColor;
+    
+    BOOL wasWindowExpandedBeforeCompact;
+    
+    NSArray<NSTextField *> *compactMetricLabels;
+    
     NSInteger lastPasteboardChangeCount;
 }
 
@@ -65,6 +91,11 @@
 
 @property (weak) IBOutlet NSTextField *aboutTextField;
 
+@property (weak) IBOutlet NSButton *launchAtLoginCheckboxButton;
+
+@property (weak) IBOutlet NSButton *autoMinimizeCheckboxButton;
+
+
 // count window
 @property (weak) IBOutlet NSPanel *counterWindow;
 
@@ -83,12 +114,6 @@
 @property (weak) IBOutlet NSTextField *spacesLabel;
 
 @property (weak) IBOutlet NSTextField *readingTimeLabel;
-
-@property (weak) IBOutlet NSTextField *gradeLabel;
-
-@property (weak) IBOutlet NSTextField *fleshEaseLabel;
-
-@property (weak) IBOutlet NSTextField *sentimentLabel;
 
 @property (weak) IBOutlet NSTextField *syllableCountLabel;
 
