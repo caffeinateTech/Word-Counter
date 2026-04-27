@@ -17,11 +17,13 @@
                 <outlet property="aboutButton" destination="CMj-2n-cRO" id="Hei-XA-cbM"/>
                 <outlet property="aboutTextField" destination="KJ6-i2-esV" id="Fuv-Yl-exN"/>
                 <outlet property="aboutWindow" destination="Ar8-nX-dHa" id="Eiw-Q1-ulf"/>
+                <outlet property="autoMinimizeCheckboxButton" destination="34I-GP-ZgZ" id="p4x-1f-tYE"/>
                 <outlet property="characterLabel" destination="m7g-tQ-2pS" id="fpS-84-7g9"/>
                 <outlet property="charactersWithoutSpacesLabel" destination="E14-yn-GGH" id="JDA-i7-WGZ"/>
                 <outlet property="contactTitleLabel" destination="Mua-PO-g2I" id="uiw-re-haX"/>
                 <outlet property="counterWindow" destination="mmM-gB-3H2" id="wnC-xF-UVh"/>
                 <outlet property="cutResultsButton" destination="n2T-rA-bbK" id="c6A-bB-KWK"/>
+                <outlet property="launchAtLoginCheckboxButton" destination="8dd-hW-gyO" id="ug6-WK-Fl7"/>
                 <outlet property="lettersLabel" destination="yzY-fU-SdH" id="TNS-aU-X66"/>
                 <outlet property="linesLabel" destination="FdB-40-dXi" id="fJQ-s6-4an"/>
                 <outlet property="onShowAdvancedButton" destination="2bK-gD-Nmh" id="t5w-vb-bCp"/>
@@ -129,17 +131,17 @@
         </menu>
         <userDefaultsController representsSharedInstance="YES" id="FAE-Rl-3FR"/>
         <customView id="Fwr-gF-Gbw">
-            <rect key="frame" x="0.0" y="0.0" width="220" height="200"/>
+            <rect key="frame" x="0.0" y="0.0" width="220" height="262"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <visualEffectView blendingMode="behindWindow" material="dark" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="c8r-EP-Ap4">
-                    <rect key="frame" x="0.0" y="0.0" width="220" height="200"/>
+                    <rect key="frame" x="0.0" y="0.0" width="220" height="262"/>
                 </visualEffectView>
                 <stackView distribution="equalCentering" orientation="vertical" alignment="centerX" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ro9-P7-wDc">
-                    <rect key="frame" x="30" y="15" width="160" height="170"/>
+                    <rect key="frame" x="30" y="15" width="160" height="232"/>
                     <subviews>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="L5L-fh-oKZ">
-                            <rect key="frame" x="23" y="138" width="114" height="37"/>
+                            <rect key="frame" x="23" y="200" width="114" height="37"/>
                             <buttonCell key="cell" type="push" title="Turn On" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ooJ-Gv-8NM">
                                 <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                 <font key="font" metaFont="system" size="14"/>
@@ -153,7 +155,7 @@
                             </connections>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="giR-ii-cJN">
-                            <rect key="frame" x="23" y="90" width="114" height="37"/>
+                            <rect key="frame" x="23" y="159" width="114" height="37"/>
                             <buttonCell key="cell" type="push" title="Light Theme" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ThY-GH-ipZ">
                                 <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                 <font key="font" metaFont="system" size="14"/>
@@ -166,8 +168,28 @@
                                 <constraint firstAttribute="height" constant="25" id="qqP-aU-qHk"/>
                             </constraints>
                         </button>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8dd-hW-gyO">
+                            <rect key="frame" x="17" y="128" width="124" height="18"/>
+                            <buttonCell key="cell" type="check" title="Launch At Login" bezelStyle="regularSquare" imagePosition="left" inset="2" id="hco-od-7lI">
+                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="onLaunchAtLoginButtonClicked:" target="Voe-Tx-rLC" id="Hen-vO-L0A"/>
+                            </connections>
+                        </button>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="34I-GP-ZgZ">
+                            <rect key="frame" x="23" y="86" width="112" height="18"/>
+                            <buttonCell key="cell" type="check" title="Auto Minimize" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="LCa-Fd-Tfb">
+                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="onAutoMinimizeCheckboxButtonClicked:" target="Voe-Tx-rLC" id="oYC-5X-ATJ"/>
+                            </connections>
+                        </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="CMj-2n-cRO">
-                            <rect key="frame" x="23" y="41" width="114" height="37"/>
+                            <rect key="frame" x="23" y="34" width="114" height="37"/>
                             <buttonCell key="cell" type="push" title="About" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="7lY-sb-Dpt">
                                 <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                 <font key="font" metaFont="system" size="14"/>
@@ -200,8 +222,12 @@
                         <integer value="1000"/>
                         <integer value="1000"/>
                         <integer value="1000"/>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
                     </visibilityPriorities>
                     <customSpacing>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
@@ -219,7 +245,7 @@
                 <constraint firstAttribute="bottom" secondItem="c8r-EP-Ap4" secondAttribute="bottom" id="pm5-Ps-Ecg"/>
                 <constraint firstAttribute="trailing" secondItem="Ro9-P7-wDc" secondAttribute="trailing" constant="30" id="xr6-t7-iQN"/>
             </constraints>
-            <point key="canvasLocation" x="-893" y="347"/>
+            <point key="canvasLocation" x="-893" y="363"/>
         </customView>
         <window title="Word-Counter" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" hasShadow="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" titlebarAppearsTransparent="YES" id="mmM-gB-3H2" userLabel="Counter Window" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES" HUD="YES"/>

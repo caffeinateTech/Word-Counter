@@ -91,6 +91,11 @@
 
 @property (weak) IBOutlet NSTextField *aboutTextField;
 
+@property (weak) IBOutlet NSButton *launchAtLoginCheckboxButton;
+
+@property (weak) IBOutlet NSButton *autoMinimizeCheckboxButton;
+
+
 // count window
 @property (weak) IBOutlet NSPanel *counterWindow;
 

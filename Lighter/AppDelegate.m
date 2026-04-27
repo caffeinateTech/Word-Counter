@@ -40,7 +40,7 @@
 
 @implementation AppDelegate
 
-@synthesize aboutWindow, raresBtn, popUpView, attachedWindow, popupShowed, websiteBtn;
+@synthesize aboutWindow, raresBtn, popUpView, attachedWindow, popupShowed, websiteBtn, launchAtLoginCheckboxButton, autoMinimizeCheckboxButton;
 
 @synthesize counterWindow, wordsLabel, linesLabel, uniqueWordsLabel, characterLabel, sentencesLabel, charactersWithoutSpacesLabel, spacesLabel, turnOnBtn, readingTimeLabel, syllableCountLabel, lettersLabel, onShowAdvancedButton, cutResultsButton, themeButton, quitButton, aboutButton, aboutTextField, websiteTitleLabel, contactTitleLabel;
 
@@ -124,6 +124,25 @@
   // Apply initial theme
   [self applyTheme];
   
+  // Setup launch at login checkbox state
+  if (launchAtLoginCheckboxButton != nil) {
+    SMAppService *appService = [SMAppService mainAppService];
+    if (appService.status == SMAppServiceStatusEnabled) {
+      [launchAtLoginCheckboxButton setState:NSControlStateValueOn];
+    } else {
+      [launchAtLoginCheckboxButton setState:NSControlStateValueOff];
+    }
+  }
+  
+  // Load auto-minimize state from user defaults, default to YES (enabled)
+  BOOL isAutoMinimizeEnabled = [[NSUserDefaults standardUserDefaults] objectForKey:@"isAutoMinimizeEnabled"] != nil ? [[NSUserDefaults standardUserDefaults] boolForKey:@"isAutoMinimizeEnabled"] : YES;
+  // Save the state to ensure future checks return the correct value
+  [[NSUserDefaults standardUserDefaults] setBool:isAutoMinimizeEnabled forKey:@"isAutoMinimizeEnabled"];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+  if (autoMinimizeCheckboxButton != nil) {
+    [autoMinimizeCheckboxButton setState:isAutoMinimizeEnabled ? NSControlStateValueOn : NSControlStateValueOff];
+  }
+  
   if (counterWindow != nil) {
     originalCounterWindowStyleMask = [counterWindow styleMask];
     hasOriginalCounterWindowStyleMask = YES;
@@ -153,6 +172,54 @@
   return selectedText;
 }
 
+
+- (IBAction)onLaunchAtLoginButtonClicked:(id)sender {
+  if (launchAtLoginCheckboxButton == nil) return;
+  
+  BOOL shouldEnable = [launchAtLoginCheckboxButton state] == NSControlStateValueOn;
+  NSError *error = nil;
+  
+  SMAppService *appService = [SMAppService mainAppService];
+  BOOL success = NO;
+  
+  if (shouldEnable) {
+    success = [appService registerAndReturnError:&error];
+  } else {
+    success = [appService unregisterAndReturnError:&error];
+  }
+  
+  if (!success && error) {
+    NSLog(@"Error setting launch at login: %@", error.localizedDescription);
+    // Revert checkbox state on error
+    [launchAtLoginCheckboxButton setState:!shouldEnable ? NSControlStateValueOn : NSControlStateValueOff];
+  }
+}
+
+- (IBAction)onAutoMinimizeCheckboxButtonClicked:(id)sender {
+  BOOL isAutoMinimizeEnabled = [autoMinimizeCheckboxButton state] == NSControlStateValueOn;
+  
+  // Save state to NSUserDefaults
+  [[NSUserDefaults standardUserDefaults] setBool:isAutoMinimizeEnabled forKey:@"isAutoMinimizeEnabled"];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+  
+  if (!isAutoMinimizeEnabled) {
+    // Auto-minimize disabled: stop the timer and expand if compact
+    if (interactionInactivityTimer != nil) {
+      [interactionInactivityTimer invalidate];
+      interactionInactivityTimer = nil;
+    }
+    
+    // If in compact mode, expand the window
+    if (isCompactMode && isOn && counterWindow != nil && [counterWindow isVisible]) {
+      [self expandCounterWindow];
+    }
+  } else {
+    // Auto-minimize enabled: restart the timer if window is on
+    if (isOn && counterWindow != nil && [counterWindow isVisible]) {
+      [self resetInteractionInactivityTimer];
+    }
+  }
+}
 
 - (IBAction)onThemeButtonClicked:(id)sender {
 
@@ -317,7 +384,7 @@
 
   // Animate the window resize with smooth easing
   [NSAnimationContext beginGrouping];
-  [[NSAnimationContext currentContext] setDuration:0.35];
+  [[NSAnimationContext currentContext] setDuration:0.4];
   [[NSAnimationContext currentContext] setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
   [[counterWindow animator] setFrame:NSMakeRect(x, newY, windowWidth, newHeight) display:YES];
   [NSAnimationContext endGrouping];
@@ -914,6 +981,12 @@
 }
 
 - (void)resetInteractionInactivityTimer {
+  // Only reset if auto-minimize is enabled
+  BOOL isAutoMinimizeEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"isAutoMinimizeEnabled"];
+  if (!isAutoMinimizeEnabled) {
+    return;
+  }
+  
   if (interactionInactivityTimer != nil) {
     [interactionInactivityTimer invalidate];
   }
@@ -928,7 +1001,8 @@
 }
 
 - (void)compactCounterWindow {
-  if (!isOn || counterWindow == nil || ![counterWindow isVisible] || isCompactMode) return;
+  BOOL isAutoMinimizeEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"isAutoMinimizeEnabled"];
+  if (!isOn || counterWindow == nil || ![counterWindow isVisible] || isCompactMode || !isAutoMinimizeEnabled) return;
   
   // Preserve current advanced/collapsed state so it can be restored on expand.
   wasWindowExpandedBeforeCompact = isWindowExpanded;
@@ -949,7 +1023,7 @@
     hasOriginalCounterWindowStyleMask = YES;
   }
   
-  CGFloat compactWidth = 40.0;
+  CGFloat compactWidth = 50.0;
   CGFloat compactHeight = [counterWindow frame].size.height;
   [counterWindow setContentMinSize:NSMakeSize(compactWidth, compactHeight)];
   
@@ -982,7 +1056,7 @@
   
   [compactCounterContentView setAlphaValue:0.0];
   [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-    context.duration = 0.22;
+    context.duration = 0.3;
     context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
     [[counterWindow animator] setFrame:frame display:YES];
     [[compactCounterContentView animator] setAlphaValue:1.0];
@@ -1034,7 +1108,7 @@
     isWindowExpanded = wasWindowExpandedBeforeCompact;
     
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-      context.duration = 0.24;
+      context.duration = 0.35;
       context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
       [[counterWindow animator] setFrame:targetFrame display:YES];
       if (fullCounterContentView != nil) {
