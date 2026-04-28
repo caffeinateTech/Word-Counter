@@ -108,7 +108,7 @@
   // They will only respond to our manual theme toggle
   [counterWindow setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
   [aboutWindow setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
-//  [popUpView setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
+  [compactCounterContentView setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
 
   // Lock buttons to light appearance so they don't follow system theme changes
   // They will only respond to our manual theme toggle
@@ -261,20 +261,13 @@
     [self coloredTitleButton:themeButton andColor:textColor];
     [self coloredTitleButton:quitButton andColor:textColor];
     [self coloredTitleButton:aboutButton andColor:textColor];
+    [self coloredTitleButton:launchAtLoginCheckboxButton andColor:textColor];
+    [self coloredTitleButton:autoMinimizeCheckboxButton andColor:textColor];
     [self coloredTitleButton:raresBtn andColor:[NSColor linkColor]];
     [self coloredTitleButton:websiteBtn andColor:[NSColor linkColor]];
 
-    // Update window colors for dark theme (HUD style dark background)
-    if (counterWindow != nil) {
-      //[counterWindow setBackgroundColor:MAATTACHEDWINDOW_DEFAULT_BACKGROUND_COLOR];
-    }
-    if (aboutWindow != nil) {
-      //[aboutWindow setBackgroundColor:MAATTACHEDWINDOW_DEFAULT_BACKGROUND_COLOR];
-    }
-
     // Update attachedWindow colors for dark theme
     if (attachedWindow != nil) {
-      //[attachedWindow setBackgroundColor:MAATTACHEDWINDOW_DEFAULT_BACKGROUND_COLOR];
       [attachedWindow setBorderColor:MAATTACHEDWINDOW_DEFAULT_BORDER_COLOR];
     }
     
@@ -283,9 +276,6 @@
       for (NSTextField *label in compactMetricValueLabels) {
         [label setTextColor:[NSColor whiteColor]];
       }
-    }
-    if (compactCounterContentView != nil && compactCounterContentView.layer != nil) {
-      compactCounterContentView.layer.backgroundColor = [[NSColor colorWithCalibratedWhite:0.0 alpha:0.9] CGColor];
     }
   } else {
     // Light theme: black text
@@ -313,20 +303,13 @@
     [self coloredTitleButton:themeButton andColor:textColor];
     [self coloredTitleButton:quitButton andColor:textColor];
     [self coloredTitleButton:aboutButton andColor:textColor];
+    [self coloredTitleButton:launchAtLoginCheckboxButton andColor:textColor];
+    [self coloredTitleButton:autoMinimizeCheckboxButton andColor:textColor];
     [self coloredTitleButton:raresBtn andColor:[NSColor linkColor]];
     [self coloredTitleButton:websiteBtn andColor:[NSColor linkColor]];
 
-    // Update window colors for light theme (white background)
-    if (counterWindow != nil) {
-      //[counterWindow setBackgroundColor:MAATTACHEDWINDOW_LIGHT_BACKGROUND_COLOR];
-    }
-    if (aboutWindow != nil) {
-     //[aboutWindow setBackgroundColor:MAATTACHEDWINDOW_LIGHT_BACKGROUND_COLOR];
-    }
-
     // Update attachedWindow colors for light theme
     if (attachedWindow != nil) {
-      //[attachedWindow setBackgroundColor:MAATTACHEDWINDOW_LIGHT_BACKGROUND_COLOR];
       [attachedWindow setBorderColor:MAATTACHEDWINDOW_LIGHT_BORDER_COLOR];
     }
     
@@ -335,9 +318,6 @@
       for (NSTextField *label in compactMetricValueLabels) {
         [label setTextColor:[NSColor blackColor]];
       }
-    }
-    if (compactCounterContentView != nil && compactCounterContentView.layer != nil) {
-      compactCounterContentView.layer.backgroundColor = [[NSColor colorWithCalibratedWhite:1.0 alpha:0.9] CGColor];
     }
   }
 }
@@ -990,7 +970,7 @@
   if (interactionInactivityTimer != nil) {
     [interactionInactivityTimer invalidate];
   }
-  interactionInactivityTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(compactCounterWindow) userInfo:nil repeats:NO];
+  interactionInactivityTimer = [NSTimer scheduledTimerWithTimeInterval:10.0 target:self selector:@selector(compactCounterWindow) userInfo:nil repeats:NO];
 }
 
 - (void)userDidInteract {
@@ -1035,20 +1015,28 @@
   if (compactCounterContentView == nil) {
     compactCounterContentView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, compactWidth, compactHeight)];
     [compactCounterContentView setWantsLayer:YES];
-    if (isDarkTheme) {
-      compactCounterContentView.layer.backgroundColor = [[NSColor colorWithCalibratedWhite:0.0 alpha:0.9] CGColor];
-    } else {
-      compactCounterContentView.layer.backgroundColor = [[NSColor colorWithCalibratedWhite:1.0 alpha:0.9] CGColor];
-    }
     [self buildCompactMetricsViewWithWidth:compactWidth height:compactHeight];
   }
   [compactCounterContentView setFrame:NSMakeRect(0, 0, compactWidth, compactHeight)];
   [counterWindow setContentView:compactCounterContentView];
   
+  // Apply HUD panel styling to match aboutWindow
   [counterWindow setStyleMask:NSWindowStyleMaskBorderless];
-  [counterWindow setOpaque:NO];
-  [counterWindow setBackgroundColor:[NSColor clearColor]];
-  [counterWindow setAlphaValue:0.9];
+  [counterWindow setOpaque:YES];
+  [counterWindow setHasShadow:YES];
+  if (isDarkTheme) {
+    [counterWindow setBackgroundColor:MAATTACHEDWINDOW_DEFAULT_BACKGROUND_COLOR];
+  } else {
+    [counterWindow setBackgroundColor:MAATTACHEDWINDOW_LIGHT_BACKGROUND_COLOR];
+  }
+  [counterWindow setAlphaValue:1.0];
+  
+  // Apply rounded corners for HUD appearance
+  [compactCounterContentView setWantsLayer:YES];
+  [compactCounterContentView.layer setCornerRadius:8.0];
+  [compactCounterContentView.layer setMasksToBounds:YES];
+
+  [compactCounterContentView setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
   NSRect frame = lastExpandedWindowFrame;
   CGFloat rightEdge = NSMaxX(lastExpandedWindowFrame);
   frame.size.width = compactWidth;
