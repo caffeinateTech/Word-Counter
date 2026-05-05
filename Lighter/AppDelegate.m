@@ -73,7 +73,7 @@
   [statusItem setHighlightMode:YES];
   statusItem.enabled = YES;
   [statusItem setToolTip:@"Word-Counter"];  // app name
-  [statusItem setImage:[NSImage imageNamed:@"MenuBarIcon.png"]];
+  [statusItem setImage:[NSImage imageNamed:@"MenuBarIcon"]];
   [[statusItem image] setTemplate:YES];
   [statusItem setTarget:self];
   [statusItem setAction:@selector(openPopUp:)];

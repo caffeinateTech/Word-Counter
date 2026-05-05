@@ -13,7 +13,6 @@
 		1B68104D1A41624700E3D45F /* LighterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B68104C1A41624700E3D45F /* LighterTests.m */; };
 		1BAC73BE1A6FC1710072B7E2 /* MAAttachedWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BAC73BD1A6FC1710072B7E2 /* MAAttachedWindow.m */; };
 		7265D2381ACA6E2200128556 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7265D2371ACA6E2200128556 /* ServiceManagement.framework */; };
-		729873D31B5E6BB00084FB5E /* MenuBarIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 729873D21B5E6BB00084FB5E /* MenuBarIcon.png */; };
 		72B9BF722F8F74A700809A91 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 72B9BF6F2F8F74A700809A91 /* SettingsManager.m */; };
 		72B9BF732F8F74A700809A91 /* SentimentAnalyzer.m in Sources */ = {isa = PBXBuildFile; fileRef = 72B9BF6D2F8F74A700809A91 /* SentimentAnalyzer.m */; };
 		72B9BF742F8F74A700809A91 /* TextAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = 72B9BF712F8F74A700809A91 /* TextAnalytics.m */; };
@@ -55,7 +54,6 @@
 		1BAC73BC1A6FC1710072B7E2 /* MAAttachedWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MAAttachedWindow.h; sourceTree = "<group>"; };
 		1BAC73BD1A6FC1710072B7E2 /* MAAttachedWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MAAttachedWindow.m; sourceTree = "<group>"; };
 		7265D2371ACA6E2200128556 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
-		729873D21B5E6BB00084FB5E /* MenuBarIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuBarIcon.png; sourceTree = "<group>"; };
 		72B9BF6C2F8F74A700809A91 /* SentimentAnalyzer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SentimentAnalyzer.h; sourceTree = "<group>"; };
 		72B9BF6D2F8F74A700809A91 /* SentimentAnalyzer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SentimentAnalyzer.m; sourceTree = "<group>"; };
 		72B9BF6E2F8F74A700809A91 /* SettingsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsManager.h; sourceTree = "<group>"; };
@@ -154,7 +152,6 @@
 		72150CDE1A416CFE0036D91A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				729873D21B5E6BB00084FB5E /* MenuBarIcon.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -257,7 +254,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				729873D31B5E6BB00084FB5E /* MenuBarIcon.png in Resources */,
 				1B68103E1A41624600E3D45F /* Images.xcassets in Resources */,
 				72CCF77F1A976665003C3552 /* MainMenu.xib in Resources */,
 			);
@@ -393,7 +389,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.0;
+				CURRENT_PROJECT_VERSION = 1.4;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = SXFJ5K42NW;
 				INFOPLIST_FILE = Lighter/Info.plist;
@@ -418,7 +414,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.0;
+				CURRENT_PROJECT_VERSION = 1.4;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = SXFJ5K42NW;
 				INFOPLIST_FILE = Lighter/Info.plist;
@@ -519,7 +515,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.0;
+				CURRENT_PROJECT_VERSION = 1.4;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = SXFJ5K42NW;
 				INFOPLIST_FILE = Lighter/Info.plist;
